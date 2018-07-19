@@ -26,11 +26,50 @@ Download the JAVA <<JAR>> file from https://jcenter.bintray.com/io/github/swagge
 
 Copy the JAR file to your Java library or into the project directory.
 
-NOTE: Current version was 1.3.3.  I copies it swagger2markup.jar to allow the script to handle this better.
+NOTE: Current version was 1.3.3.  I copied it `swagger2markup.jar` to allow the script to handle this better.
 
 == GIT
 
 This project has a local GIT repository and a GMH private repository.
+
+== SWAGGER YAML file
+
+The Swagger specification can be saved to a <<YAML>> or a <<JSON>> file format.
+
+link:CC360-api.yaml[Swagger YAML Example]
+
+== GRADLE Build tool
+
+Gradle is a build tool used for Java, C++, Python and other languages.
+
+* The download for the Gradle binary is https://gradle.org/next-steps/?version=4.9&format=bin
+
+* Create a new directory `C:\Gradle` with File Explorer.
+
+* Open a second File Explorer window and go to the directory where the Gradle distribution was downloaded. Double-click the ZIP archive to expose the content. Drag the content folder `gradle-4.9` to your newly created `C:\Gradle` folder.
+
+* In File Explorer right-click on the This PC (or Computer) icon, then click Properties -> Advanced System Settings -> Environmental Variables.
+
+* Under System Variables select Path, then click Edit. Add an entry for `C:\Gradle\gradle-4.9\bin`. Click OK to save.
+
+.Environment Variable PATH
+image::environment.png[Environment Variable PATH, align='center']
+ 
+gradle -v
+
+
+== Swagger2Markup example
+
+You can clone and build the jar, then use this CLI to generate asciidocs.
+
+ gradle assemble
+ java -jar ./build/libs/swagger2markup-cli-X.X.X.jar convert -i the_swagger_file.json -d /the/path/to/output
+
+
+
+So for the example in this project
+
+  java -jar ./swagger2markup.jar convert -i cc360-API.yaml -d ./doco/CC360-API.adoc 
 
 
 
@@ -64,6 +103,11 @@ Faster than you.
 
 <<<<
 == Glossary
+
+[[JSON]]
+JSON::
+JavaScript Object Notation.
+
 
 [[YAML]]
 YAML::

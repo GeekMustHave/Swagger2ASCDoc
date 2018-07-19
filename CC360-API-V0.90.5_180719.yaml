@@ -1,0 +1,1672 @@
+---
+swagger: "2.0"
+info:
+  description: "# `Optum Government Systems`\n\nThe API is designed for use by Optum\
+    \ web applications including \nCareConnect 360 and the CareConnect API.\n\n##\
+    \ Protected Health Information Warning\nThe *(request)* and *(response)* may contain\
+    \ \n**Protected Health Information (PHI)**.\n\n## Usage\nUse of this API is resitricted\
+    \ and limited \nby State of Michigan Department of Human and Health Services **(MDHHS)**\
+    \ \nand by     United Health Care **(UHC)** security policies.'\n\n## TEST Edition\n\
+    This version of the API specification is considered a **TEST** and subject to\
+    \ \nchange with notice.\n"
+  version: v1
+  title: CC360 API Version 0.90.5
+  termsOfService: None
+  contact:
+    name: MDHHS - State Of Michigan.
+    url: https://michigan.gov
+    email: helpdesk@michigan.gov
+  license:
+    name: Restricted usage as detemined by MDHHS
+    url: https://data.michigan.gov/
+host: cc360-pwc.mockable.io
+basePath: /api/v1
+schemes:
+- https
+consumes:
+- application/json
+produces:
+- application/json
+security:
+- basicAuth: []
+paths:
+  /HelloWorld:
+    get:
+      tags:
+      - Test-Connection
+      summary: HelloWorld
+      description: |
+        This endpoint is used just for verifying that the API connection is working.
+
+        It displays the server timestamp.
+
+        It display the Build Edition to verify the correct version is being used.
+
+        It does not require any access to any of the datasources.
+      operationId: HelloWorld
+      parameters: []
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/HelloWorldModel'
+          responseSchema:
+            $ref: '#/definitions/HelloWorldModel'
+  /plans:
+    get:
+      tags:
+      - Plans
+      summary: plans
+      description: "### Overview\nGet a list of the Plans/Agencies including Plan\
+        \ ID, type, \nEHR System and location\n"
+      operationId: planList
+      parameters: []
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+            - PlanType: GCHAP
+              PlanID: "01"
+              PlanName: 'Genesee County zChildren’s Healthcare Access plan  '
+              EHRSystem: Any
+              Location: Any
+              ExtractDUA: Inactive
+              WebDUA: Active
+              APIDUA: Active
+            - PlanType: ICO
+              PlanID: "11"
+              PlanName: Aetna Better Health of Michigan
+              EHRSystem: Any
+              Location: Any
+              ExtractDUA: Inactive
+              WebDUA: Inactive
+              APIDUA: Active
+          schema:
+            $ref: '#/definitions/PlanModel'
+          responseSchema:
+            $ref: '#/definitions/PlanModel'
+  /beneficiaries/{beneID}/summary:
+    get:
+      tags:
+      - Summary
+      summary: beneficiaries/{beneID}/summary
+      description: |
+        ### Overview
+        Get the "Top 3 list" for each of 11 focus areas (tiles)
+
+        * Chronic Conditions
+        * Pharmacy
+        * E/D Visits
+        * I/P Admissions
+        * Procedure Codes
+        * Psychrotropics
+        * Antipsychotics
+        * Dental
+        * ED Dental Visits
+        * Recent Providers
+        * BH I/P Admissions
+      operationId: beneficiarySummary
+      parameters:
+      - name: planID
+        in: header
+        description: "## Description\nplanID and planType combine to uniquely identify\
+          \ organizations within CC360.\nThey will be retrievable from CC360 via another\
+          \ service. \n----\n\nConsumer will use this service to populate their map\
+          \ mechanism so that incoming \nrequests can be translated into the correct\
+          \ CC360 organization details.\n\n----\n## Mock server    \n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using **01**.\n"
+        required: true
+        type: string
+        maxLength: 2
+        minLength: 2
+      - name: planType
+        in: header
+        description: "## Description\nplanID and planType combine to uniquely identify\
+          \ organizations within CC360.\nthey will be retrievable from CC360 via another\
+          \ service. \n----\nConsumer  will use this\nservice to populate their map\
+          \ mechanism so that incoming requests can be\ntranslated into the correct\
+          \ CC360 organization details.\n----\nPlan types are strings (ie PIHP, MHP,\
+          \ ICO, ....)\n\n## Mock Server\n* This parameter is not validated.\n* Any\
+          \ value will work.\n* Recommend using **CMH**.\n"
+        required: true
+        type: string
+        maxLength: 10
+      - name: planLocation
+        in: header
+        description: |
+          ## Description
+          planLocation is provided to allow MDHHs to authorize logical or
+          geographicalsubsets of an organization, for example- Grand Rapids or
+          Diabetes Support Team.
+          ----
+          If the DUA with MDHHS does not identify any authorized
+          subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
+          the consumer must supply one of those names and cannot use 'ANY'
+
+          ## Mock Server
+          * This parameter is not validated.
+          * Any value will work.
+          * Recommend using **Any**.
+        required: true
+        type: string
+        maxLength: 30
+      - name: EHRSystem
+        in: header
+        description: |
+          ## Description
+          EHRSystem allows MDHHs to authorize one EHR to make requests while not
+          authorizing another. The service must supply one of the names recorded in the
+          web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+          ## Mock Server
+          * This parameter is not validated.
+          * Any value will work.
+          * Recommend using **Any**.
+        required: true
+        type: string
+        maxLength: 30
+      - name: validateACRS
+        in: header
+        description: "## Description\nConsumer will be reviewing their own records\
+          \ to attempt to establish a\ncurrentcare-relationship between the organization\
+          \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it\
+          \ will forward the request, and a CC360 service\nwill in turn attempt to\
+          \ find a relationship in its authorization tables, and\nact according to\
+          \ the result.\n----\nIf MiHIN can validate the relationship (validAcrs =\
+          \ **True**) the behaviour of\nCC360 service will vary between an initial\
+          \ ‘tuning’ phase and long-term\nproduction. \n----\nIn the tuning phase,\
+          \ a CC360 service will always consult its own\nauthorization tables and\
+          \ will act according to that value. \n----\nDaily, a reconciliation report\
+          \ will be generated to compare Consumer and CC360 results,\nand MDHHS staff\
+          \ will work with Consumer to understand and correct any variations.\nOnce\
+          \ the variations drop below a defined threshold (t.b.d), CC360 services\n\
+          will switch to always respecting any ACRS delivered True assertion.\n\n\
+          ## Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
+          * Recommend using **True**.\n"
+        required: true
+        type: boolean
+        enum:
+        - "true"
+        - "false"
+      - name: userID
+        in: header
+        description: "## Description\nThe name of the user from the Plan causing the\
+          \ API to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using one user\
+          \ ID for all your tests.\n"
+        required: true
+        type: string
+        maxLength: 30
+      - name: beneID
+        in: path
+        description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
+          \ Server\n\nThe only Bedneficiary ID's available on the Mock server are\
+          \ \n  * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not\
+          \ exist in either the QA ir Production servers.\n\n  \n"
+        required: true
+        type: string
+        maxLength: 10
+        minLength: 10
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/ClientSummary.json
+          schema:
+            $ref: '#/definitions/ClientSummaryTilesModel'
+          responseSchema:
+            $ref: '#/definitions/ClientSummaryTilesModel'
+  /beneficiaries/{beneID}/summary/chronicconditions:
+    get:
+      tags:
+      - Summary
+      summary: beneficiaries/{beneID}/summary/chronicConditions
+      description: |
+        ### Overview
+        Returns a list of drill down details for the Chronic Conditions tile
+      operationId: beneficiarySummaryChronicCondition
+      parameters:
+      - name: planID
+        in: header
+        description: "## Description\nplanID and planType combine to uniquely identify\
+          \ organizations within CC360.\nThey will be retrievable from CC360 via another\
+          \ service. \n----\n\nConsumer will use this service to populate their map\
+          \ mechanism so that incoming \nrequests can be translated into the correct\
+          \ CC360 organization details.\n\n----\n## Mock server    \n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using **01**.\n"
+        required: true
+        type: string
+        maxLength: 2
+        minLength: 2
+      - name: planType
+        in: header
+        description: "## Description\nplanID and planType combine to uniquely identify\
+          \ organizations within CC360.\nthey will be retrievable from CC360 via another\
+          \ service. \n----\nConsumer  will use this\nservice to populate their map\
+          \ mechanism so that incoming requests can be\ntranslated into the correct\
+          \ CC360 organization details.\n----\nPlan types are strings (ie PIHP, MHP,\
+          \ ICO, ....)\n\n## Mock Server\n* This parameter is not validated.\n* Any\
+          \ value will work.\n* Recommend using **CMH**.\n"
+        required: true
+        type: string
+        maxLength: 10
+      - name: planLocation
+        in: header
+        description: |
+          ## Description
+          planLocation is provided to allow MDHHs to authorize logical or
+          geographicalsubsets of an organization, for example- Grand Rapids or
+          Diabetes Support Team.
+          ----
+          If the DUA with MDHHS does not identify any authorized
+          subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
+          the consumer must supply one of those names and cannot use 'ANY'
+
+          ## Mock Server
+          * This parameter is not validated.
+          * Any value will work.
+          * Recommend using **Any**.
+        required: true
+        type: string
+        maxLength: 30
+      - name: EHRSystem
+        in: header
+        description: |
+          ## Description
+          EHRSystem allows MDHHs to authorize one EHR to make requests while not
+          authorizing another. The service must supply one of the names recorded in the
+          web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+          ## Mock Server
+          * This parameter is not validated.
+          * Any value will work.
+          * Recommend using **Any**.
+        required: true
+        type: string
+        maxLength: 30
+      - name: validateACRS
+        in: header
+        description: "## Description\nConsumer will be reviewing their own records\
+          \ to attempt to establish a\ncurrentcare-relationship between the organization\
+          \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it\
+          \ will forward the request, and a CC360 service\nwill in turn attempt to\
+          \ find a relationship in its authorization tables, and\nact according to\
+          \ the result.\n----\nIf MiHIN can validate the relationship (validAcrs =\
+          \ **True**) the behaviour of\nCC360 service will vary between an initial\
+          \ ‘tuning’ phase and long-term\nproduction. \n----\nIn the tuning phase,\
+          \ a CC360 service will always consult its own\nauthorization tables and\
+          \ will act according to that value. \n----\nDaily, a reconciliation report\
+          \ will be generated to compare Consumer and CC360 results,\nand MDHHS staff\
+          \ will work with Consumer to understand and correct any variations.\nOnce\
+          \ the variations drop below a defined threshold (t.b.d), CC360 services\n\
+          will switch to always respecting any ACRS delivered True assertion.\n\n\
+          ## Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
+          * Recommend using **True**.\n"
+        required: true
+        type: boolean
+        enum:
+        - "true"
+        - "false"
+      - name: userID
+        in: header
+        description: "## Description\nThe name of the user from the Plan causing the\
+          \ API to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using one user\
+          \ ID for all your tests.\n"
+        required: true
+        type: string
+        maxLength: 30
+      - name: beneID
+        in: path
+        description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
+          \ Server\n\nThe only Bedneficiary ID's available on the Mock server are\
+          \ \n  * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not\
+          \ exist in either the QA ir Production servers.\n\n  \n"
+        required: true
+        type: string
+        maxLength: 10
+        minLength: 10
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryChronicConditionsTile.json
+          schema:
+            $ref: '#/definitions/SummaryChronicConditionTileModel'
+          responseSchema:
+            $ref: '#/definitions/SummaryChronicConditionTileModel'
+  /beneficiaries/{beneID}/summary/pharmacy:
+    get:
+      tags:
+      - Summary
+      summary: beneficiaries/{beneID}/summary/pharmacy
+      description: |
+        ### Overview
+        Returns a list of drill down details for the Pharmacy tile
+      operationId: beneficiarySummaryPharmacy
+      parameters:
+      - name: planID
+        in: header
+        description: "## Description\nplanID and planType combine to uniquely identify\
+          \ organizations within CC360.\nThey will be retrievable from CC360 via another\
+          \ service. \n----\n\nConsumer will use this service to populate their map\
+          \ mechanism so that incoming \nrequests can be translated into the correct\
+          \ CC360 organization details.\n\n----\n## Mock server    \n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using **01**.\n"
+        required: true
+        type: string
+        maxLength: 2
+        minLength: 2
+      - name: planType
+        in: header
+        description: "## Description\nplanID and planType combine to uniquely identify\
+          \ organizations within CC360.\nthey will be retrievable from CC360 via another\
+          \ service. \n----\nConsumer  will use this\nservice to populate their map\
+          \ mechanism so that incoming requests can be\ntranslated into the correct\
+          \ CC360 organization details.\n----\nPlan types are strings (ie PIHP, MHP,\
+          \ ICO, ....)\n\n## Mock Server\n* This parameter is not validated.\n* Any\
+          \ value will work.\n* Recommend using **CMH**.\n"
+        required: true
+        type: string
+        maxLength: 10
+      - name: planLocation
+        in: header
+        description: |
+          ## Description
+          planLocation is provided to allow MDHHs to authorize logical or
+          geographicalsubsets of an organization, for example- Grand Rapids or
+          Diabetes Support Team.
+          ----
+          If the DUA with MDHHS does not identify any authorized
+          subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
+          the consumer must supply one of those names and cannot use 'ANY'
+
+          ## Mock Server
+          * This parameter is not validated.
+          * Any value will work.
+          * Recommend using **Any**.
+        required: true
+        type: string
+        maxLength: 30
+      - name: EHRSystem
+        in: header
+        description: |
+          ## Description
+          EHRSystem allows MDHHs to authorize one EHR to make requests while not
+          authorizing another. The service must supply one of the names recorded in the
+          web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+          ## Mock Server
+          * This parameter is not validated.
+          * Any value will work.
+          * Recommend using **Any**.
+        required: true
+        type: string
+        maxLength: 30
+      - name: validateACRS
+        in: header
+        description: "## Description\nConsumer will be reviewing their own records\
+          \ to attempt to establish a\ncurrentcare-relationship between the organization\
+          \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it\
+          \ will forward the request, and a CC360 service\nwill in turn attempt to\
+          \ find a relationship in its authorization tables, and\nact according to\
+          \ the result.\n----\nIf MiHIN can validate the relationship (validAcrs =\
+          \ **True**) the behaviour of\nCC360 service will vary between an initial\
+          \ ‘tuning’ phase and long-term\nproduction. \n----\nIn the tuning phase,\
+          \ a CC360 service will always consult its own\nauthorization tables and\
+          \ will act according to that value. \n----\nDaily, a reconciliation report\
+          \ will be generated to compare Consumer and CC360 results,\nand MDHHS staff\
+          \ will work with Consumer to understand and correct any variations.\nOnce\
+          \ the variations drop below a defined threshold (t.b.d), CC360 services\n\
+          will switch to always respecting any ACRS delivered True assertion.\n\n\
+          ## Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
+          * Recommend using **True**.\n"
+        required: true
+        type: boolean
+        enum:
+        - "true"
+        - "false"
+      - name: userID
+        in: header
+        description: "## Description\nThe name of the user from the Plan causing the\
+          \ API to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using one user\
+          \ ID for all your tests.\n"
+        required: true
+        type: string
+        maxLength: 30
+      - name: beneID
+        in: path
+        description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
+          \ Server\n\nThe only Bedneficiary ID's available on the Mock server are\
+          \ \n  * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not\
+          \ exist in either the QA ir Production servers.\n\n  \n"
+        required: true
+        type: string
+        maxLength: 10
+        minLength: 10
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryPharmacyTileShort.json
+          schema:
+            $ref: '#/definitions/SummaryPharmacyDrillDownModel'
+          responseSchema:
+            $ref: '#/definitions/SummaryPharmacyDrillDownModel'
+  /beneficiaries/{beneID}/summary/ipadmissions:
+    get:
+      tags:
+      - Summary
+      summary: beneficiaries/{beneID}/summary/IPAdmisions
+      description: |
+        ### Overview
+        Returns a list of drill down details for the IP Admissions tile
+      operationId: beneficiarySummaryIPAdmissions
+      parameters:
+      - name: planID
+        in: header
+        description: "## Description\nplanID and planType combine to uniquely identify\
+          \ organizations within CC360.\nThey will be retrievable from CC360 via another\
+          \ service. \n----\n\nConsumer will use this service to populate their map\
+          \ mechanism so that incoming \nrequests can be translated into the correct\
+          \ CC360 organization details.\n\n----\n## Mock server    \n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using **01**.\n"
+        required: true
+        type: string
+        maxLength: 2
+        minLength: 2
+      - name: planType
+        in: header
+        description: "## Description\nplanID and planType combine to uniquely identify\
+          \ organizations within CC360.\nthey will be retrievable from CC360 via another\
+          \ service. \n----\nConsumer  will use this\nservice to populate their map\
+          \ mechanism so that incoming requests can be\ntranslated into the correct\
+          \ CC360 organization details.\n----\nPlan types are strings (ie PIHP, MHP,\
+          \ ICO, ....)\n\n## Mock Server\n* This parameter is not validated.\n* Any\
+          \ value will work.\n* Recommend using **CMH**.\n"
+        required: true
+        type: string
+        maxLength: 10
+      - name: planLocation
+        in: header
+        description: |
+          ## Description
+          planLocation is provided to allow MDHHs to authorize logical or
+          geographicalsubsets of an organization, for example- Grand Rapids or
+          Diabetes Support Team.
+          ----
+          If the DUA with MDHHS does not identify any authorized
+          subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
+          the consumer must supply one of those names and cannot use 'ANY'
+
+          ## Mock Server
+          * This parameter is not validated.
+          * Any value will work.
+          * Recommend using **Any**.
+        required: true
+        type: string
+        maxLength: 30
+      - name: EHRSystem
+        in: header
+        description: |
+          ## Description
+          EHRSystem allows MDHHs to authorize one EHR to make requests while not
+          authorizing another. The service must supply one of the names recorded in the
+          web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+          ## Mock Server
+          * This parameter is not validated.
+          * Any value will work.
+          * Recommend using **Any**.
+        required: true
+        type: string
+        maxLength: 30
+      - name: validateACRS
+        in: header
+        description: "## Description\nConsumer will be reviewing their own records\
+          \ to attempt to establish a\ncurrentcare-relationship between the organization\
+          \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it\
+          \ will forward the request, and a CC360 service\nwill in turn attempt to\
+          \ find a relationship in its authorization tables, and\nact according to\
+          \ the result.\n----\nIf MiHIN can validate the relationship (validAcrs =\
+          \ **True**) the behaviour of\nCC360 service will vary between an initial\
+          \ ‘tuning’ phase and long-term\nproduction. \n----\nIn the tuning phase,\
+          \ a CC360 service will always consult its own\nauthorization tables and\
+          \ will act according to that value. \n----\nDaily, a reconciliation report\
+          \ will be generated to compare Consumer and CC360 results,\nand MDHHS staff\
+          \ will work with Consumer to understand and correct any variations.\nOnce\
+          \ the variations drop below a defined threshold (t.b.d), CC360 services\n\
+          will switch to always respecting any ACRS delivered True assertion.\n\n\
+          ## Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
+          * Recommend using **True**.\n"
+        required: true
+        type: boolean
+        enum:
+        - "true"
+        - "false"
+      - name: userID
+        in: header
+        description: "## Description\nThe name of the user from the Plan causing the\
+          \ API to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using one user\
+          \ ID for all your tests.\n"
+        required: true
+        type: string
+        maxLength: 30
+      - name: beneID
+        in: path
+        description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
+          \ Server\n\nThe only Bedneficiary ID's available on the Mock server are\
+          \ \n  * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not\
+          \ exist in either the QA ir Production servers.\n\n  \n"
+        required: true
+        type: string
+        maxLength: 10
+        minLength: 10
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryIPAdmissionsTile.json
+          schema:
+            $ref: '#/definitions/SummaryIPAdmissionsDrillDownModel'
+          responseSchema:
+            $ref: '#/definitions/SummaryIPAdmissionsDrillDownModel'
+  /beneficiaries/{beneID}/summary/edvisits:
+    get:
+      tags:
+      - Summary
+      summary: beneficiaries/{beneID}/summary/edvisits
+      description: |
+        ### Overview
+        Returns a list of drill down details for the Emergency Department visits.
+      operationId: beneficiarySummaryEDVisits
+      parameters:
+      - name: planID
+        in: header
+        description: "## Description\nplanID and planType combine to uniquely identify\
+          \ organizations within CC360.\nThey will be retrievable from CC360 via another\
+          \ service. \n----\n\nConsumer will use this service to populate their map\
+          \ mechanism so that incoming \nrequests can be translated into the correct\
+          \ CC360 organization details.\n\n----\n## Mock server    \n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using **01**.\n"
+        required: true
+        type: string
+        maxLength: 2
+        minLength: 2
+      - name: planType
+        in: header
+        description: "## Description\nplanID and planType combine to uniquely identify\
+          \ organizations within CC360.\nthey will be retrievable from CC360 via another\
+          \ service. \n----\nConsumer  will use this\nservice to populate their map\
+          \ mechanism so that incoming requests can be\ntranslated into the correct\
+          \ CC360 organization details.\n----\nPlan types are strings (ie PIHP, MHP,\
+          \ ICO, ....)\n\n## Mock Server\n* This parameter is not validated.\n* Any\
+          \ value will work.\n* Recommend using **CMH**.\n"
+        required: true
+        type: string
+        maxLength: 10
+      - name: planLocation
+        in: header
+        description: |
+          ## Description
+          planLocation is provided to allow MDHHs to authorize logical or
+          geographicalsubsets of an organization, for example- Grand Rapids or
+          Diabetes Support Team.
+          ----
+          If the DUA with MDHHS does not identify any authorized
+          subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
+          the consumer must supply one of those names and cannot use 'ANY'
+
+          ## Mock Server
+          * This parameter is not validated.
+          * Any value will work.
+          * Recommend using **Any**.
+        required: true
+        type: string
+        maxLength: 30
+      - name: EHRSystem
+        in: header
+        description: |
+          ## Description
+          EHRSystem allows MDHHs to authorize one EHR to make requests while not
+          authorizing another. The service must supply one of the names recorded in the
+          web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+          ## Mock Server
+          * This parameter is not validated.
+          * Any value will work.
+          * Recommend using **Any**.
+        required: true
+        type: string
+        maxLength: 30
+      - name: validateACRS
+        in: header
+        description: "## Description\nConsumer will be reviewing their own records\
+          \ to attempt to establish a\ncurrentcare-relationship between the organization\
+          \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it\
+          \ will forward the request, and a CC360 service\nwill in turn attempt to\
+          \ find a relationship in its authorization tables, and\nact according to\
+          \ the result.\n----\nIf MiHIN can validate the relationship (validAcrs =\
+          \ **True**) the behaviour of\nCC360 service will vary between an initial\
+          \ ‘tuning’ phase and long-term\nproduction. \n----\nIn the tuning phase,\
+          \ a CC360 service will always consult its own\nauthorization tables and\
+          \ will act according to that value. \n----\nDaily, a reconciliation report\
+          \ will be generated to compare Consumer and CC360 results,\nand MDHHS staff\
+          \ will work with Consumer to understand and correct any variations.\nOnce\
+          \ the variations drop below a defined threshold (t.b.d), CC360 services\n\
+          will switch to always respecting any ACRS delivered True assertion.\n\n\
+          ## Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
+          * Recommend using **True**.\n"
+        required: true
+        type: boolean
+        enum:
+        - "true"
+        - "false"
+      - name: userID
+        in: header
+        description: "## Description\nThe name of the user from the Plan causing the\
+          \ API to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using one user\
+          \ ID for all your tests.\n"
+        required: true
+        type: string
+        maxLength: 30
+      - name: beneID
+        in: path
+        description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
+          \ Server\n\nThe only Bedneficiary ID's available on the Mock server are\
+          \ \n  * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not\
+          \ exist in either the QA ir Production servers.\n\n  \n"
+        required: true
+        type: string
+        maxLength: 10
+        minLength: 10
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryEDVisitsTileShort.json
+          schema:
+            $ref: '#/definitions/SummaryEDVisitsDrillDownModel'
+          responseSchema:
+            $ref: '#/definitions/SummaryEDVisitsDrillDownModel'
+  /beneficiaries/{beneID}/summary/recentproviders:
+    get:
+      tags:
+      - Summary
+      summary: beneficiaries/{beneID}/summary/recentproviders
+      description: |
+        ### Overview
+        Returns a list of drill down details for the Recent Providers tile
+      operationId: beneficiarySummaryRecentProviders
+      parameters:
+      - name: planID
+        in: header
+        description: "## Description\nplanID and planType combine to uniquely identify\
+          \ organizations within CC360.\nThey will be retrievable from CC360 via another\
+          \ service. \n----\n\nConsumer will use this service to populate their map\
+          \ mechanism so that incoming \nrequests can be translated into the correct\
+          \ CC360 organization details.\n\n----\n## Mock server    \n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using **01**.\n"
+        required: true
+        type: string
+        maxLength: 2
+        minLength: 2
+      - name: planType
+        in: header
+        description: "## Description\nplanID and planType combine to uniquely identify\
+          \ organizations within CC360.\nthey will be retrievable from CC360 via another\
+          \ service. \n----\nConsumer  will use this\nservice to populate their map\
+          \ mechanism so that incoming requests can be\ntranslated into the correct\
+          \ CC360 organization details.\n----\nPlan types are strings (ie PIHP, MHP,\
+          \ ICO, ....)\n\n## Mock Server\n* This parameter is not validated.\n* Any\
+          \ value will work.\n* Recommend using **CMH**.\n"
+        required: true
+        type: string
+        maxLength: 10
+      - name: planLocation
+        in: header
+        description: |
+          ## Description
+          planLocation is provided to allow MDHHs to authorize logical or
+          geographicalsubsets of an organization, for example- Grand Rapids or
+          Diabetes Support Team.
+          ----
+          If the DUA with MDHHS does not identify any authorized
+          subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
+          the consumer must supply one of those names and cannot use 'ANY'
+
+          ## Mock Server
+          * This parameter is not validated.
+          * Any value will work.
+          * Recommend using **Any**.
+        required: true
+        type: string
+        maxLength: 30
+      - name: EHRSystem
+        in: header
+        description: |
+          ## Description
+          EHRSystem allows MDHHs to authorize one EHR to make requests while not
+          authorizing another. The service must supply one of the names recorded in the
+          web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+          ## Mock Server
+          * This parameter is not validated.
+          * Any value will work.
+          * Recommend using **Any**.
+        required: true
+        type: string
+        maxLength: 30
+      - name: validateACRS
+        in: header
+        description: "## Description\nConsumer will be reviewing their own records\
+          \ to attempt to establish a\ncurrentcare-relationship between the organization\
+          \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it\
+          \ will forward the request, and a CC360 service\nwill in turn attempt to\
+          \ find a relationship in its authorization tables, and\nact according to\
+          \ the result.\n----\nIf MiHIN can validate the relationship (validAcrs =\
+          \ **True**) the behaviour of\nCC360 service will vary between an initial\
+          \ ‘tuning’ phase and long-term\nproduction. \n----\nIn the tuning phase,\
+          \ a CC360 service will always consult its own\nauthorization tables and\
+          \ will act according to that value. \n----\nDaily, a reconciliation report\
+          \ will be generated to compare Consumer and CC360 results,\nand MDHHS staff\
+          \ will work with Consumer to understand and correct any variations.\nOnce\
+          \ the variations drop below a defined threshold (t.b.d), CC360 services\n\
+          will switch to always respecting any ACRS delivered True assertion.\n\n\
+          ## Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
+          * Recommend using **True**.\n"
+        required: true
+        type: boolean
+        enum:
+        - "true"
+        - "false"
+      - name: userID
+        in: header
+        description: "## Description\nThe name of the user from the Plan causing the\
+          \ API to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using one user\
+          \ ID for all your tests.\n"
+        required: true
+        type: string
+        maxLength: 30
+      - name: beneID
+        in: path
+        description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
+          \ Server\n\nThe only Bedneficiary ID's available on the Mock server are\
+          \ \n  * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not\
+          \ exist in either the QA ir Production servers.\n\n  \n"
+        required: true
+        type: string
+        maxLength: 10
+        minLength: 10
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryRecentProvidersTileShort.json
+          schema:
+            $ref: '#/definitions/SummaryRecentProvidersTileModel'
+          responseSchema:
+            $ref: '#/definitions/SummaryRecentProvidersTileModel'
+  /beneficiaries/{beneID}/summary/procedurecodes:
+    get:
+      tags:
+      - Summary
+      summary: beneficiaries/{beneID}/summary/procedurecodes
+      description: |
+        ### Overview
+        Returns a list of drill down details for the procedure codes tile
+      operationId: beneficiarySummaryProcedureCodes
+      parameters:
+      - name: planID
+        in: header
+        description: "## Description\nplanID and planType combine to uniquely identify\
+          \ organizations within CC360.\nThey will be retrievable from CC360 via another\
+          \ service. \n----\n\nConsumer will use this service to populate their map\
+          \ mechanism so that incoming \nrequests can be translated into the correct\
+          \ CC360 organization details.\n\n----\n## Mock server    \n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using **01**.\n"
+        required: true
+        type: string
+        maxLength: 2
+        minLength: 2
+      - name: planType
+        in: header
+        description: "## Description\nplanID and planType combine to uniquely identify\
+          \ organizations within CC360.\nthey will be retrievable from CC360 via another\
+          \ service. \n----\nConsumer  will use this\nservice to populate their map\
+          \ mechanism so that incoming requests can be\ntranslated into the correct\
+          \ CC360 organization details.\n----\nPlan types are strings (ie PIHP, MHP,\
+          \ ICO, ....)\n\n## Mock Server\n* This parameter is not validated.\n* Any\
+          \ value will work.\n* Recommend using **CMH**.\n"
+        required: true
+        type: string
+        maxLength: 10
+      - name: planLocation
+        in: header
+        description: |
+          ## Description
+          planLocation is provided to allow MDHHs to authorize logical or
+          geographicalsubsets of an organization, for example- Grand Rapids or
+          Diabetes Support Team.
+          ----
+          If the DUA with MDHHS does not identify any authorized
+          subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
+          the consumer must supply one of those names and cannot use 'ANY'
+
+          ## Mock Server
+          * This parameter is not validated.
+          * Any value will work.
+          * Recommend using **Any**.
+        required: true
+        type: string
+        maxLength: 30
+      - name: EHRSystem
+        in: header
+        description: |
+          ## Description
+          EHRSystem allows MDHHs to authorize one EHR to make requests while not
+          authorizing another. The service must supply one of the names recorded in the
+          web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+          ## Mock Server
+          * This parameter is not validated.
+          * Any value will work.
+          * Recommend using **Any**.
+        required: true
+        type: string
+        maxLength: 30
+      - name: validateACRS
+        in: header
+        description: "## Description\nConsumer will be reviewing their own records\
+          \ to attempt to establish a\ncurrentcare-relationship between the organization\
+          \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it\
+          \ will forward the request, and a CC360 service\nwill in turn attempt to\
+          \ find a relationship in its authorization tables, and\nact according to\
+          \ the result.\n----\nIf MiHIN can validate the relationship (validAcrs =\
+          \ **True**) the behaviour of\nCC360 service will vary between an initial\
+          \ ‘tuning’ phase and long-term\nproduction. \n----\nIn the tuning phase,\
+          \ a CC360 service will always consult its own\nauthorization tables and\
+          \ will act according to that value. \n----\nDaily, a reconciliation report\
+          \ will be generated to compare Consumer and CC360 results,\nand MDHHS staff\
+          \ will work with Consumer to understand and correct any variations.\nOnce\
+          \ the variations drop below a defined threshold (t.b.d), CC360 services\n\
+          will switch to always respecting any ACRS delivered True assertion.\n\n\
+          ## Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
+          * Recommend using **True**.\n"
+        required: true
+        type: boolean
+        enum:
+        - "true"
+        - "false"
+      - name: userID
+        in: header
+        description: "## Description\nThe name of the user from the Plan causing the\
+          \ API to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using one user\
+          \ ID for all your tests.\n"
+        required: true
+        type: string
+        maxLength: 30
+      - name: beneID
+        in: path
+        description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
+          \ Server\n\nThe only Bedneficiary ID's available on the Mock server are\
+          \ \n  * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not\
+          \ exist in either the QA ir Production servers.\n\n  \n"
+        required: true
+        type: string
+        maxLength: 10
+        minLength: 10
+      responses:
+        200:
+          description: Success
+          examples:
+            application/json:
+              $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryProcedureCodesTileShort.json
+          schema:
+            $ref: '#/definitions/SummaryProcedureCodesTileModel'
+          responseSchema:
+            $ref: '#/definitions/SummaryProcedureCodesTileModel'
+securityDefinitions:
+  basicAuth:
+    description: |
+      ## Security Contract
+      planID, planType, planLocation, and planSystem are the header elements used
+      during connection validation. The validation comprises two steps – validation
+      that the organization has an authorized care relationship with the passed
+      beneficiary, and validation that the qualified-organization is currently
+      authorized to use the service at all.
+
+      ‘planID + planType’ uniquely identifies an organization and can used to
+      provide an index into the CC360 universe table to validate organization acces.
+
+      ‘planID + planType + planLocation + planSystem’ uniquely identifies an entry
+      in the system-access authorization table.
+    type: basic
+definitions:
+  Status400:
+    type: object
+    properties:
+      MISSING_PLAN:
+        type: string
+        example: Header value is missing.  planID has to be passed with a non empty value
+      MISSING_TYPE:
+        type: string
+        example: Header value is missing.  planYpe has to be passed with a non empty value
+      INVALID_BENEFICARY:
+        type: string
+        example: The beneficary ID if supplied was not formatted correctly.Beneficiary ID is 10 digits, zero filled
+      INVALID_CASE:
+        type: string
+        example: The case ID if supplied was not formatted correctly.Case ID is a integer number, np decimal point or commas.
+      INVALID_GOAL:
+        type: string
+        example: 'The Goal ID if supplied was not formatted correctly.  Goal ID is
+          a integer number, no decimal point or commas.  '
+    description: Bad request. Request was received that could not be understood by the server. This could be cause by any of the issues below.
+  Status404:
+    type: object
+    properties:
+      Message:
+        type: string
+        example: Beneficiary is not found.
+    description: Not Found . the server could not find what was requested
+  HelloWorldModel:
+    type: object
+    properties:
+      Message:
+        type: string
+        example: Hello World.
+      ServerTime:
+        type: string
+        example: 9/18/2017 4:04:14 PM
+        description: |
+          This is the State of Michigan Application servers time stamp.
+      BuildEdition:
+        type: string
+        example: 17.9.6464.27407
+        description: "The Build Edition is used to keep track of which packages \n\
+          are being published on each of the servers.  \n\nUsing the example above-\n\
+          \n* Major release (ie- 17.9)\n* Build version (ie- 6464)\n* Package ID (ie-\
+          \ 27407)\n"
+    description: |
+      This is a confidence response to show that the link connection to the API server is working
+    example:
+      Message: Hello World.
+      BuildEdition: 17.9.6464.27407
+      ServerTime: 9/18/2017 4:04:14 PM
+  ClientSummaryTilesModel:
+    type: object
+    properties:
+      ChronicConditions:
+        type: array
+        description: "These are the Top 3 Chronic conditions out of the total # for\
+          \ a Beneficiery. \n"
+        items:
+          $ref: '#/definitions/ClientSummaryTilesModel_ChronicConditions'
+      Pharmacy:
+        type: array
+        description: |
+          These are top 3 pharmacy fills
+        items:
+          $ref: '#/definitions/ClientSummaryTilesModel_Pharmacy'
+      EDVisits:
+        type: array
+        description: |
+          These are most recent 3 visits.
+        items:
+          $ref: '#/definitions/ClientSummaryTilesModel_EDVisits'
+      IPAdmissions:
+        type: array
+        description: "List of the last 3 admissions. \n"
+        items:
+          $ref: '#/definitions/ClientSummaryTilesModel_IPAdmissions'
+      ProcedureCodes:
+        type: array
+        description: "List of the top 3 codes. \n"
+        items:
+          $ref: '#/definitions/ClientSummaryTilesModel_ProcedureCodes'
+      Psychotropics:
+        type: array
+        description: "List of the top 3 psychrotropicss. \n"
+        items:
+          $ref: '#/definitions/ClientSummaryTilesModel_Psychotropics'
+      Antipsychotics:
+        type: array
+        description: "List of the top 3 Antipsychotics. \n"
+        items:
+          $ref: '#/definitions/ClientSummaryTilesModel_Antipsychotics'
+      Dental:
+        type: array
+        description: |
+          List of the most recent 3 dental visits.
+        items:
+          $ref: '#/definitions/ClientSummaryTilesModel_Dental'
+      ERDental:
+        type: array
+        description: |
+          List of the most recent 3 ED dental visits
+        items:
+          $ref: '#/definitions/ClientSummaryTilesModel_Dental'
+      RecentProviders:
+        type: array
+        description: |
+          List of the most recent 3 providers
+        items:
+          $ref: '#/definitions/ClientSummaryTilesModel_RecentProviders'
+      BHIPAdmissions:
+        type: array
+        description: |
+          List of the most recent 3 BH Inpatient admissions
+        items:
+          $ref: '#/definitions/ClientSummaryTilesModel_BHIPAdmissions'
+    description: "**NOTE** This model describes a single object.  \nThere are 11 areas\
+      \ (Tiles) of summaries that make up this model.\nAll 11 tiles are returned in\
+      \ a single object.\n"
+  SummaryPharmacyDrillDownModel:
+    type: array
+    description: |
+      Pharmacy details for a specific beneficiary.
+    items:
+      $ref: '#/definitions/SummaryPharmacyDrillDownModel_inner'
+  SummaryIPAdmissionsDrillDownModel:
+    type: array
+    description: |
+      This is a list of inpatient admissions for the selected beneficiary.
+    items:
+      $ref: '#/definitions/SummaryIPAdmissionsDrillDownModel_inner'
+  SummaryEDVisitsDrillDownModel:
+    type: array
+    description: |
+      This is a list of Emergency Room visits for the selected beneficiary.
+    items:
+      $ref: '#/definitions/SummaryEDVisitsDrillDownModel_inner'
+  SummaryChronicConditionTileModel:
+    type: object
+    properties:
+      BeneficiaryID:
+        type: string
+        example: "9999999903"
+        description: |
+          Medicaid identifier for this beneficiery
+      Conditions:
+        type: string
+        example: DIABETES
+        description: |
+          Name of the Chronic Condition(s)
+      Last 6 Months:
+        type: string
+        example: '         14'
+        description: |
+          Number of occurrences for this Condition in 6 Months
+      7-12 Months:
+        type: string
+        example: '         37'
+        description: |
+          Number of occurrences for this Condition in 7-12 Months
+      13-18 Months:
+        type: string
+        example: '        109'
+        description: |
+          Number of occurrences for this Condition in 13-18 Months
+    description: "**NOTE** This model describes a single object in an array of zero\
+      \ to many objects.        \nList of the Chronic conditions with tile drill down\
+      \ details\n"
+  SummaryRecentProvidersTileModel:
+    type: object
+    properties:
+      BeneficiaryID:
+        type: string
+        example: "9999999903"
+        description: |
+          Medicaid identifier for this beneficiery
+      DateOfService:
+        type: string
+        example: 2/18/2017 12:00:00 AM
+        description: |
+          Date of Service received by the Beneficiery
+      ProviderID:
+        type: string
+        example: "1528031226"
+        description: |
+          NPI-National Provider Identifier of the Provider
+      PrimaryDx:
+        type: string
+        example: M79621 - PAIN IN RIGHT UPPER ARM
+        description: |
+          Primary diagnosis made at the time of Service
+      SecondaryDx:
+        type: string
+        example: ' - PAIN IN RIGHT UPPER ARM'
+        description: |
+          Secondary diagnosis made at the time of Service
+      TCN:
+        type: string
+        example: "99999999999999000"
+        description: |
+          Transaction Control Number of a Claim
+    description: "**NOTE** This model describes a single object in an array of zero\
+      \ to many objects.        \nList of the all of the recent providers with tile\
+      \ drill down details\n"
+  SummaryProcedureCodesTileModel:
+    type: object
+    properties:
+      BeneficiaryID:
+        type: string
+        example: "9999999903"
+        description: |
+          Medicaid identifier for this beneficiery
+      ProcedureCode:
+        type: string
+        example: 99336 -  Domicil/r-home visit est pat
+        description: "Sub-type of Medical Classification used to identify specific\
+          \ surgical, medical or diagnostic interventions \n"
+      CurrentCount:
+        type: number
+        format: int32
+        example: 6.0
+        description: "Number of times for a given ProcedureCode used in a given period\
+          \ of time \n"
+      EarliestDate:
+        type: string
+        example: 2/8/2016 12:00:00 AM
+        description: |
+          Earliest date of the Procedure Code in a given period of time
+      LatestDate:
+        type: string
+        example: 2/8/2017 12:00:00 AM
+        description: |
+          Most recent date of the Procedure Code in a given period of time
+    description: "**NOTE** This model describes a single object in an array of zero\
+      \ to many objects.        \nList of the all of the procedure calls with tile\
+      \ drill down details\n"
+  PlanModel:
+    type: array
+    description: |
+      The object is the plans and the status of the Data User Agreements (DUA).
+      The APIDUA indicates if this plan has been granted access to the CC360-API.
+    items:
+      $ref: '#/definitions/PlanModel_inner'
+  ClientSummaryTilesModel_ChronicConditions:
+    properties:
+      Condition:
+        type: string
+        example: DIABETES
+      CurrentCount:
+        type: integer
+        format: int32
+        example: 14
+      TILE_IND:
+        type: string
+        example: 'H    '
+        description: |
+          Indicates the risk status for this tile
+          * Blank - Unknown
+          * L - Low
+          * M - Medium
+          * H - High
+  ClientSummaryTilesModel_Pharmacy:
+    properties:
+      GenericDrugName:
+        type: string
+        example: ALPRAZOLAM
+      Number of Fills:
+        type: integer
+        format: int32
+        example: 14
+        description: |
+          The number of fills for the given DrugName.
+      Most Recent Fill:
+        type: string
+        example: 3/14/2017 12:00:00 AM
+        description: |
+          This is timestamp field.  The time is always midnight.
+          The date portion is separated from the time portion by a single space.
+
+          Date Format - zm/zd/yyyy months and days dont have leading zeros.
+  ClientSummaryTilesModel_EDVisits:
+    properties:
+      VisitDate:
+        type: string
+        example: 12/27/2016
+        description: "Emergency Department Visit Date \n"
+      Facility:
+        type: string
+        example: '1134144801 -  HENRY FORD HOSPITAL '
+        description: |
+          The name of the Facility preceded by its 10 digit NPI.
+      TILE_IND:
+        type: string
+        example: 'L    '
+        description: |
+          Indicates the risk status for this tile
+          * Blank - Unknown
+          * L - Low
+          * M - Medium
+          * H - High
+  ClientSummaryTilesModel_IPAdmissions:
+    properties:
+      AdmitDate:
+        type: string
+        example: 2016/02/16
+      FacilityName:
+        type: string
+        example: '1952307852 -  MUNSON MEDICAL CENTER '
+        description: |
+          The name of the Facility preceded by its 10 digit NPI.
+      TILE_IND:
+        type: string
+        example: 'L    '
+        description: |
+          Indicates the risk status for this tile
+          * Blank - Unknown
+          * L - Low
+          * M - Medium
+          * H - High
+  ClientSummaryTilesModel_ProcedureCodes:
+    properties:
+      Procedure Code:
+        type: string
+        example: 99213 -  Office/outpatient visit est
+      Current Count:
+        type: integer
+        format: int32
+        example: 3
+  ClientSummaryTilesModel_Psychotropics:
+    properties:
+      GenericDrugName:
+        type: string
+        example: DIVALPROEX SODIUM
+        description: |
+          This is the cool name for the drug.
+      NumberOfFills:
+        type: integer
+        format: int32
+        example: 3
+      MostRecentFill:
+        type: string
+        example: 2016-09-19
+        description: |
+          hhhhh
+  ClientSummaryTilesModel_Antipsychotics:
+    properties:
+      GenericDrugName:
+        type: string
+        example: BREXPIPRAZOLE
+      NumberOfFills:
+        type: integer
+        format: int32
+        example: 2
+      MostRecentFill:
+        type: string
+        example: 2017-06-30
+  ClientSummaryTilesModel_Dental:
+    properties:
+      VisitDate:
+        type: string
+        example: 02/22/2016
+      Provider:
+        type: string
+        example: 'Hoover Family Dental '
+      TILE_IND:
+        type: string
+        example: 'L    '
+        description: |
+          Indicates the risk status for this tile
+          * Blank - Unknown
+          * L - Low
+          * M - Medium
+          * H - High
+  ClientSummaryTilesModel_RecentProviders:
+    properties:
+      MostRecentVisit:
+        type: string
+        example: 2017-05-08
+      ProviderID:
+        type: string
+        example: "1952791105"
+      ProviderName:
+        type: string
+        example: BEST URGENT CARE PC
+      TotalVisits:
+        type: integer
+        format: int32
+        example: 3
+  ClientSummaryTilesModel_BHIPAdmissions:
+    properties:
+      AdminDate:
+        type: string
+        example: 2017-05-05
+      FacilityName:
+        type: string
+        example: '1144381245 -  HARBOR OAKS HOSPITAL '
+      TILE_IND:
+        type: string
+        example: 'H    '
+        description: |
+          Indicates the risk status for this tile
+          * Blank - Unknown
+          * L - Low
+          * M - Medium
+          * H - High
+  SummaryPharmacyDrillDownModel_inner:
+    properties:
+      BeneficiaryID:
+        type: string
+        example: "9999999903"
+        description: |
+          Medicaid identifier for this beneficiary
+      Filldate:
+        type: string
+        example: 2017-08-04
+        description: |
+          Date that the prescription was filled.
+      GenericName:
+        type: string
+        example: WARFARIN SODIUM
+        description: "The generic name of the drug.  \n"
+      BrandName:
+        type: string
+        example: WARFARIN SODIUM
+        description: |
+          The brand name of the drug,
+      PrescribingProvider:
+        type: string
+        example: 'JIRA G COUMARBATCH '
+        description: |
+          Name of the doctor or provider who wrote the script.
+      QuantityDispensed:
+        type: string
+        example: "30.00"
+        description: |
+          Number of pills dispensed expressed in metric decimal units.
+      DaysSupply:
+        type: integer
+        format: int32
+        example: 30
+        description: |
+          How many days this script is expected to last.
+      DailyDose:
+        type: string
+        example: "1.00"
+        description: |
+          Dosage of medication per day.
+      DoseStrength:
+        type: string
+        example: "1.000"
+        description: |
+          Provides a description of drug potency in units.
+      DoseUnits:
+        type: string
+        example: MG
+        description: "Use in conjunction with drug strength number, volumne number\
+          \ and \nvolumne units to obtain a conventional strength expression for the\
+          \ drug product.\n"
+        minLength: 10
+        maxLength: 10
+      TotalDailyDose:
+        type: string
+        example: 1.000 - MG
+        description: "The daily dosage multiplied by the strength.  \nThe first portion\
+          \ of this field is the units in decimal with 3 units of precision.\nThere\
+          \ is a separator (space)(hypen)(space)\nThen the measurement of weight.\n"
+        minLength: 25
+        maxLength: 25
+  SummaryIPAdmissionsDrillDownModel_inner:
+    properties:
+      BeneficiaryID:
+        type: string
+        example: "9999999903"
+        description: |
+          Medicaid identifier for this beneficiary
+      AdmitDate:
+        type: string
+        example: 2017-04-30
+        description: |
+          Date the beneficiary was admitted to the facility.
+      DischargeDate:
+        type: string
+        example: 2017-05-01
+        description: |
+          Date the beneficiary was discharfed from the facility.
+      FacilityName:
+        type: string
+        example: 2234455666 - St Marys Cental Hospital
+        description: |
+          The name of the facility where the in patient admission occured.
+      LengthOfStay:
+        type: integer
+        format: int32
+        example: 2
+        description: |
+          The number of days the Inpatient admission was for.
+      PrimaryDX:
+        type: string
+        example: I639 -  CEREBRAL INFARCTION UNSPECIFIED
+        description: |
+          Primary diagnosos code.  Includes the ICD-10 code and the description.
+      HospitalType:
+        type: string
+        example: null
+        description: "Type of facility.  \n"
+      TCN:
+        type: string
+        example: "9988776655443327777"
+        description: |
+          Transaction Control Number, uniquely identifies transaction in CHAMPS
+  SummaryEDVisitsDrillDownModel_inner:
+    properties:
+      BeneficiaryID:
+        type: string
+        example: "9999999903"
+        description: |
+          Medicaid identifier for this beneficiary
+      DateOfService:
+        type: string
+        example: 2/25/2017 12:00:00 AM
+        description: |
+          Date the emergency department visit occured.
+      Facility:
+        type: string
+        example: '1023088168 -  ST JOHN HOSPITAL AND MEDICAL CENTER '
+        description: |
+          The name of the facility where the in patient admission occured.
+      PrimaryDiagnosis:
+        type: string
+        example: IM7989 - Other specified soft tissue disorders
+        description: |
+          Primary diagnosos code.  Includes the ICD-10 code and the description.
+      SecondaryDiagnosis:
+        type: string
+        example: R600 - Localized edema
+        description: |
+          Secondary diagnosos code.  Includes the ICD-10 code and the description.
+      AdmittingReason:
+        type: string
+        example: null
+        description: "??.  \n"
+      TCN:
+        type: string
+        example: "9988776655443327777"
+        description: |
+          Transaction Control Number, uniquely identifies transaction in CHAMPS
+  PlanModel_inner:
+    properties:
+      PlanType:
+        type: string
+        example: PIHP
+        description: |
+          Indicates which type of provider for the plan. PIHP, MHP, ICO, etc'
+        maxLength: 10
+        enum:
+        - CGHAP
+        - ICO
+        - LCW
+        - LHD
+        - MHP
+        - PIHP
+      PlanID:
+        type: string
+        example: "13"
+        description: |
+          This is the code used to help identify a specific plan
+        maxLength: 50
+      PlanName:
+        type: string
+        example: Macomb Co CMH services
+        maxLength: 500
+      EHRSystem:
+        type: string
+        example: PCE
+        description: "Type type of Electronic Health Records system that the consumer\
+          \ \nis proxy for this request\n\nDefault is **Any**\n"
+        maxLength: 30
+      Location:
+        type: string
+        example: Grand Rapids
+        description: "The location of the plan that the consumer is proxy for this\
+          \ request.  \nIt is a simple text field to identify location \n(ie Lansing,\
+          \ Grand Rapids, Traverse City\n\nDefault is **Any**\n"
+        maxLength: 30
+      ExtractDUA:
+        type: string
+        example: Active
+        description: "Indicates that this Plan ID/Type/EHRSystem/Location \nhas a\
+          \ valid Data Usaer Agreement for extracting data \nfrom the CC360 web application.\n"
+        enum:
+        - Active
+        - Inactive
+      WebDUA:
+        type: string
+        example: Active
+        description: "Indicates that thisd Plan ID/TYpe/EHRSystem/Location \nhas a\
+          \ valid data user agreement for using the CC360 web application.\n"
+        enum:
+        - Active
+        - Inactive
+      APIDUA:
+        type: string
+        example: Active
+        description: "Indicates that this Plan ID/Type/EHRSystem/Location \nhas a\
+          \ valid data user agreement for using the CC360 API.\n"
+        enum:
+        - Active
+        - Inactive
+parameters:
+  planIDParam:
+    name: planID
+    in: header
+    description: "## Description\nplanID and planType combine to uniquely identify\
+      \ organizations within CC360.\nThey will be retrievable from CC360 via another\
+      \ service. \n----\n\nConsumer will use this service to populate their map mechanism\
+      \ so that incoming \nrequests can be translated into the correct CC360 organization\
+      \ details.\n\n----\n## Mock server    \n* This parameter is not validated.\n\
+      * Any value will work.\n* Recommend using **01**.\n"
+    required: true
+    type: string
+    maxLength: 2
+    minLength: 2
+  planTypeParam:
+    name: planType
+    in: header
+    description: "## Description\nplanID and planType combine to uniquely identify\
+      \ organizations within CC360.\nthey will be retrievable from CC360 via another\
+      \ service. \n----\nConsumer  will use this\nservice to populate their map mechanism\
+      \ so that incoming requests can be\ntranslated into the correct CC360 organization\
+      \ details.\n----\nPlan types are strings (ie PIHP, MHP, ICO, ....)\n\n## Mock\
+      \ Server\n* This parameter is not validated.\n* Any value will work.\n* Recommend\
+      \ using **CMH**.\n"
+    required: true
+    type: string
+    maxLength: 10
+  planLocationParam:
+    name: planLocation
+    in: header
+    description: |
+      ## Description
+      planLocation is provided to allow MDHHs to authorize logical or
+      geographicalsubsets of an organization, for example- Grand Rapids or
+      Diabetes Support Team.
+      ----
+      If the DUA with MDHHS does not identify any authorized
+      subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
+      the consumer must supply one of those names and cannot use 'ANY'
+
+      ## Mock Server
+      * This parameter is not validated.
+      * Any value will work.
+      * Recommend using **Any**.
+    required: true
+    type: string
+    maxLength: 30
+  planSystemParam:
+    name: EHRSystem
+    in: header
+    description: |
+      ## Description
+      EHRSystem allows MDHHs to authorize one EHR to make requests while not
+      authorizing another. The service must supply one of the names recorded in the
+      web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+      ## Mock Server
+      * This parameter is not validated.
+      * Any value will work.
+      * Recommend using **Any**.
+    required: true
+    type: string
+    maxLength: 30
+  validatedACRSParm:
+    name: validateACRS
+    in: header
+    description: "## Description\nConsumer will be reviewing their own records to\
+      \ attempt to establish a\ncurrentcare-relationship between the organization\
+      \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it will\
+      \ forward the request, and a CC360 service\nwill in turn attempt to find a relationship\
+      \ in its authorization tables, and\nact according to the result.\n----\nIf MiHIN\
+      \ can validate the relationship (validAcrs = **True**) the behaviour of\nCC360\
+      \ service will vary between an initial ‘tuning’ phase and long-term\nproduction.\
+      \ \n----\nIn the tuning phase, a CC360 service will always consult its own\n\
+      authorization tables and will act according to that value. \n----\nDaily, a\
+      \ reconciliation report will be generated to compare Consumer and CC360 results,\n\
+      and MDHHS staff will work with Consumer to understand and correct any variations.\n\
+      Once the variations drop below a defined threshold (t.b.d), CC360 services\n\
+      will switch to always respecting any ACRS delivered True assertion.\n\n## Mock\
+      \ Server\n* This parameter is not validated.\n* Any value will work.\n* Recommend\
+      \ using **True**.\n"
+    required: true
+    type: boolean
+    enum:
+    - "true"
+    - "false"
+  userIDParm:
+    name: userID
+    in: header
+    description: "## Description\nThe name of the user from the Plan causing the API\
+      \ to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter is\
+      \ not validated.\n* Any value will work.\n* Recommend using one user ID for\
+      \ all your tests.\n"
+    required: true
+    type: string
+    maxLength: 30
+  beneficiaryIDParam:
+    name: beneID
+    in: path
+    description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
+      \ Server\n\nThe only Bedneficiary ID's available on the Mock server are \n \
+      \ * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not exist\
+      \ in either the QA ir Production servers.\n\n  \n"
+    required: true
+    type: string
+    maxLength: 10
+    minLength: 10

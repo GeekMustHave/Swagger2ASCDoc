@@ -442,6 +442,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#_installation">Installation</a></li>
 <li><a href="#_git">GIT</a></li>
+<li><a href="#_swagger_yaml_file">SWAGGER YAML file</a></li>
+<li><a href="#_gradle_build_tool">GRADLE Build tool</a></li>
+<li><a href="#_swagger2markup_example">Swagger2Markup example</a></li>
 <li><a href="#_references">References</a>
 <ul class="sectlevel2">
 <li><a href="#_swagger2markdown">Swagger2Markdown</a></li>
@@ -480,7 +483,7 @@ This method produces a PDF file from the Swagger <a href="#YAML">[YAML]</a> file
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Current version was 1.3.3.  I copies it swagger2markup.jar to allow the script to handle this better.
+Current version was 1.3.3.  I copied it <code>swagger2markup.jar</code> to allow the script to handle this better.
 </td>
 </tr>
 </table>
@@ -492,6 +495,75 @@ Current version was 1.3.3.  I copies it swagger2markup.jar to allow the script t
 <div class="sectionbody">
 <div class="paragraph">
 <p>This project has a local GIT repository and a GMH private repository.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_swagger_yaml_file">SWAGGER YAML file</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Swagger specification can be saved to a <a href="#YAML">[YAML]</a> or a <a href="#JSON">[JSON]</a> file format.</p>
+</div>
+<div class="paragraph">
+<p><a href="CC360-api.yaml">Swagger YAML Example</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_gradle_build_tool">GRADLE Build tool</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Gradle is a build tool used for Java, C++, Python and other languages.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The download for the Gradle binary is <a href="https://gradle.org/next-steps/?version=4.9&amp;format=bin" class="bare">https://gradle.org/next-steps/?version=4.9&amp;format=bin</a></p>
+</li>
+<li>
+<p>Create a new directory <code>C:\Gradle</code> with File Explorer.</p>
+</li>
+<li>
+<p>Open a second File Explorer window and go to the directory where the Gradle distribution was downloaded. Double-click the ZIP archive to expose the content. Drag the content folder <code>gradle-4.9</code> to your newly created <code>C:\Gradle</code> folder.</p>
+</li>
+<li>
+<p>In File Explorer right-click on the This PC (or Computer) icon, then click Properties &#8594; Advanced System Settings &#8594; Environmental Variables.</p>
+</li>
+<li>
+<p>Under System Variables select Path, then click Edit. Add an entry for <code>C:\Gradle\gradle-4.9\bin</code>. Click OK to save.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock" style="text-align: center">
+<div class="content">
+<img src="./images/environment.png" alt="Environment Variable PATH">
+</div>
+<div class="title">Figure 1. Environment Variable PATH</div>
+</div>
+<div class="paragraph">
+<p>gradle -v</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_swagger2markup_example">Swagger2Markup example</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can clone and build the jar, then use this CLI to generate asciidocs.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>gradle assemble
+java -jar ./build/libs/swagger2markup-cli-X.X.X.jar convert -i the_swagger_file.json -d /the/path/to/output</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So for the example in this project</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>java -jar ./swagger2markup.jar convert -i cc360-API.yaml -d ./doco/CC360-API.adoc</pre>
+</div>
 </div>
 <div style="page-break-after: always;"></div>
 </div>
@@ -555,6 +627,14 @@ The Swagger Specification has been donated to to the Open API Initiative (OAI) a
 <div class="sect1">
 <h2 id="_glossary">Glossary</h2>
 <div class="sectionbody">
+<div id="JSON" class="dlist">
+<dl>
+<dt class="hdlist1">JSON</dt>
+<dd>
+<p>JavaScript Object Notation.</p>
+</dd>
+</dl>
+</div>
 <div id="YAML" class="dlist">
 <dl>
 <dt class="hdlist1">YAML</dt>
@@ -569,7 +649,7 @@ The Swagger Specification has been donated to to the Open API Initiative (OAI) a
 <div id="footer">
 <div id="footer-text">
 Version 2.1b<br>
-Last updated 2018-07-19 18:27:56 Eastern Daylight Time
+Last updated 2018-07-19 19:37:44 Eastern Daylight Time
 </div>
 </div>
 </body>
