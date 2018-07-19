@@ -1,0 +1,71 @@
+= Swagger to ASCIIDoc Markdown 
+John Schuster <John.schuster@PhoenixWorkgrpup.com>
+v2.1b, 07/19/2018: Research Notes
+:Author: John HR Schuster
+:Company: Phoenix Learning Labs
+:toc: left
+:toclevels: 4:
+:imagesdir: ./images
+:pagenums:
+:experimental:
+:source-hightlighter: pygments
+:icons: font
+:docdir: */documents
+:github: Github repository
+:linkattrs:
+:seclinks:
+
+The Swagger API specification file is in a <<YAML>> format.  
+When used with SwaggerHub it provides excellent on-line documentation and testing services.
+However, sometimes a printed version of the swagger <<YAML>> file is needed.
+This method produces a PDF file from the Swagger <<YAML>> file.
+
+== Installation
+
+Download the JAVA <<JAR>> file from https://jcenter.bintray.com/io/github/swagger2markup/swagger2markup/.
+
+Copy the JAR file to your Java library or into the project directory.
+
+NOTE: Current version was 1.3.3.  I copies it swagger2markup.jar to allow the script to handle this better.
+
+== GIT
+
+This project has a local GIT repository and a GMH private repository.
+
+
+
+<<<<
+== References
+
+=== Swagger2Markdown
+
+https://github.com/Swagger2Markup/swagger2markup
+
+The primary goal of this project is to simplify the generation of an up-to-date RESTful API documentation by combining documentation that’s been hand-written with auto-generated API documentation produced by Swagger. The result is intended to be an up-to-date, easy-to-read, on- and offline user guide, comparable to GitHub’s API documentation. The output of Swagger2Markup can be used as an alternative to swagger-ui and can be served as static content.
+
+NOTE: The Swagger Specification has been donated to to the Open API Initiative (OAI) and has been renamed to the OpenAPI Specification.
+
+http://swagger2markup.github.io/swagger2markup/1.3.3/
+
+Swagger2Markdown Documentation.  
+
+=== Swagger2Markdown CLI
+
+https://github.com/Swagger2Markup/swagger2markup-cli
+
+This is a CLI for Swagger2Markup. It converts a Swagger JSON or YAML file into several AsciiDoc or GitHub Flavored Markdown documents which can be combined with hand-written documentation. The Swagger source file can be located locally or remotely via HTTP. Swagger2Markup supports the Swagger 1.2 and 2.0 specification.
+
+
+<<<<
+== Question and Answers
+[qanda]
+How Fast can a Cheetah run?::
+Faster than you.
+
+<<<<
+== Glossary
+
+[[YAML]]
+YAML::
+Yet Another Markdown Language
+ 
