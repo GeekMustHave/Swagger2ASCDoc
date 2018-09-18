@@ -1,0 +1,1934 @@
+swagger: '2.0'
+
+################################################################################
+#                     Overview and Revision History                            #
+################################################################################
+# CareConnect-360 API - Optum Government Systems
+# The API is designed for use by Optum web applications including CareConnect 360
+# The (request) and (response) may contain Protected Health Information
+# Use of this API is resitricted and limited by State of Michigan
+# Department of Human and Health Services (MDHHS) and by
+# United Health Care (UHC) security policies.
+#
+# The (example) used in this API definition are fictional and do not
+# represent any person, place or thing.
+#
+# NOTE: Revision history information has been moved to the 
+# Supplemental Documentation.  Limited access.
+# https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/doco/CC360-API_SupplementDocumentation.html
+#
+# Version 0.98.5  07/28/2017
+
+
+################################################################################
+#                              API Information                                 #
+################################################################################   
+
+info:
+  version: v1
+  title: CC360 API Version 0.98.5
+  description: |
+    # **CareConnect-360 API** 
+    **Optum Government Systems**
+    
+    
+    The API is designed for use by Optum web applications including 
+    CareConnect 360 and the CareConnect API.
+    
+    ## Protected Health Information Warning
+    The *(request)* and *(response)* may contain 
+    **Protected Health Information (PHI)**.
+    
+    
+    Use of this API is resitricted and limited 
+    by State of Michigan Department of Human and Health Services **(MDHHS)** 
+    and by     United Health Care **(UHC)** security policies.'
+    
+    ## Data Sources
+    The data sources for these API endpoints come from two databases.
+    
+    * SSQL - CC360 Microsoft SQL Server
+    * TDATA - MDHHS Teradata data warehouse
+    
+    ## DRAFT Edition
+    This version of the API specification is considered a **Draft** and subject to 
+    change without notice.
+  
+  
+  termsOfService: None
+  contact:
+    name: MDHHS - State Of Michigan.
+    url: https://michigan.gov
+    email: helpdesk@michigan.gov
+    
+  license:
+    name: Restricted usage as detemined by MDHHS
+    url: https://data.michigan.gov/
+        
+    
+# host: mi2012.com
+# basePath: /api/v1
+
+# Added by API Auto Mocking Plugin
+# Used to help Mock up the API calls
+host: virtserver.swaggerhub.com
+# basePath prefixes all resource paths 
+basePath: /PhoenixWorkgroup/CC360-API/v1
+
+# Mockable.IO server for development
+# no real data, actual JSON responses:
+# host: demo5885691.mockable.io
+# basepath is prefix for this version of the API
+# basePath: /api/v1
+
+
+# NOTE: HTTPS required as per SOM DTMB requirements
+schemes:
+  - https
+# Default format of bodies a client can send (Content-Type) for all endpoints
+# All API calls conform to this json format
+consumes:
+  - application/json
+# format of the responses to the client (Accepts) all endpoints
+produces:
+  - application/json   
+  
+################################################################################
+#                                  Security                                    #
+################################################################################
+securityDefinitions:
+  # this API will be consumes via either local host or Private VNP tunnel
+  # basic authentication is minimum definition required
+  basicAuth:
+    description: |
+      ## Security Contract
+      planID, planType, planLocation, and planSystem are the header elements used
+      during connection validation. The validation comprises two steps – validation
+      that the organization has an authorized care relationship with the passed
+      beneficiary, and validation that the qualified-organization is currently
+      authorized to use the service at all.
+      
+      ‘planID + planType’ uniquely identifies an organization and can used to
+      provide an index into the CC360 universe table to validate organization acces.
+      
+      ‘planID + planType + planLocation + planSystem’ uniquely identifies an entry
+      in the system-access authorization table.
+
+    type: basic
+    
+  # defines the default security for all paths
+security:
+  - basicAuth: []  
+  
+#####################################################################
+##                        PARAMETERS                              ###
+#####################################################################
+# NOTE: Good Swagger definition has the parameters before the path  statement
+parameters:
+
+  ######################################################################
+  # Header parameters:
+  ######################################################################    
+
+  # *******************************************************************
+  # planID 
+  # *******************************************************************
+  planIDParam:
+    name: planID
+    description: |
+      planID and planType combine to uniquely identify organizations within CC360.
+      They will be retrievable from CC360 via another service. MiHIN will use this
+      service to populate their map mechanism so that incoming requests can be
+      translated into the correct CC360 organization details.
+      
+      Plan ID's are integer numbers (ie- 12, 19, 23)
+    type: string
+    in: header
+    required: true
+    maxLength: 50
+
+  # *******************************************************************
+  # planType 
+  # *******************************************************************    
+  planTypeParam:
+    name: planType
+    description: |
+      planID and planType combine to uniquely identify organizations within CC360.
+      they will be retrievable from CC360 via another service. MiHIN will use this
+      service to populate their map mechanism so that incoming requests can be
+      translated into the correct CC360 organization details.
+      
+      Plan types are strings (ie PIHP, MHP, ICO, ....)
+    type: string
+    in: header
+    required: true
+    maxLength: 10
+    
+    
+  # *******************************************************************
+  # location
+  # *******************************************************************    
+  planLocationParam:
+    name: planLocation
+    description: |
+      planLocation is provided to allow MDHHs to authorize logical or
+      geographicalsubsets of an organization, for example- Grand Rapids or
+      Diabetes Support Team. If the DUA with MDHHS does not identify any authorized
+      subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
+      the consumer must supply one of those names and cannot use 'ANY'
+    type: string
+    in: header
+    required: true    
+    maxLength: 30
+    
+  # *******************************************************************
+  # system
+  # *******************************************************************    
+  planSystemParam:
+    name: EHRSystem
+    description: |
+      EHRSystem allows MDHHs to authorize one EHR to make requests while not
+      authorizing another. The service must supply one of the names recorded in the
+      web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+    type: string
+    in: header
+    required: true   
+    maxLength: 30
+
+
+  # *******************************************************************
+  # validatedACRS
+  # *******************************************************************
+  validatedACRSParm:
+    name: validateACRS
+    description: |
+      Consumer will be reviewing their own records to attempt to establish a
+      currentcare-relationship between the organization and the beneficiary. 
+      
+      If it
+      cannot (validAcrs = **False**), it will forward the request, and a CC360 service
+      will in turn attempt to find a relationship in its authorization tables, and
+      act according to the result.
+      
+      
+      If MiHIN can validate the relationship (validAcrs = **True**) the behaviour of
+      CC360 service will vary between an initial ‘tuning’ phase and long-term
+      production. 
+      
+      In the tuning phase, a CC360 service will always consult its own
+      authorization tables and will act according to that value. 
+      
+      Daily, a
+      reconciliation report will be generated to compare Consumer and CC360 results,
+      and MDHHS staff will work with Consumer to understand and correct any variations.
+      Once the variations drop below a defined threshold (t.b.d), CC360 services
+      will switch to always respecting any ACRS delivered True assertion.
+
+    type: boolean
+    in: header
+    required: true
+    enum:
+      - True
+      - False
+    
+  # *******************************************************************
+  # userID
+  # *******************************************************************
+  userIDParm:
+    name: userID
+    description: |
+      The name of the user from the Plan causing the API to be 
+      requested by  the consumer
+    type: string
+    in: header
+    required: true
+    maxLength: 30
+
+    
+  ######################################################################
+  # Path parameters:
+  ######################################################################       
+  
+  # *******************************************************************
+  # beneficiaryID
+  # *******************************************************************  
+  beneficiaryIDParam:
+    name: beneID
+    in: path
+    description: |
+      10 digit Bemeficiary Id, zero filled, 9999999990-9999999998 are mock IDs
+    required: true
+    type: string
+    minLength: 10  
+    maxLength: 10
+
+
+  # *******************************************************************
+  # caseID
+  # *******************************************************************      
+  caseIDParam:
+    name: caseID
+    in: path
+    description: |
+      This is a unique ID used to identify a single ICP PLan (case)
+    required: true
+    type: integer
+    format: int32    
+    
+  # *******************************************************************
+  # goalID
+  # *******************************************************************      
+  goalIDParam:   
+    name: goalID
+    in: path
+    description: |
+      This is a unique ID used to identify a single Goal 
+      within a ICP Plan (Case)
+    required: true
+    type: integer
+    format: int32          
+
+
+    
+  
+    
+################################################################################
+#                                   PATHS                                      #
+################################################################################
+paths:
+
+  # *********************************************************************
+  # ** (HelloWorld) Simple connection confirmation endpoint  
+  # *********************************************************************
+  /api/v1/HelloWorld:
+    get:
+      tags: 
+        - Test-Connection
+      summary: 'Just a test endpoint to verify that the API works'
+      description: |
+        This endpoint is used just for verifying that the API connection is working.
+      
+        It does not require any access to any of the datasources.
+      operationId: 'HelloWorld'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: string
+            example: 'HelloWorld'
+        '400':
+          description: 'Bad request'
+          schema:
+            $ref: '#/definitions/Status400'     
+        # -- 401
+        # -- 403
+        # -- 500
+      
+      
+
+  # *********************************************************************
+  # *** (beneficaries) List of beneficiaries that match search criteria
+  # *********************************************************************
+  /api/v1/beneficiaries:
+    get:
+      tags:
+        - Beneficiaries
+      summary: 'FUTURE: Get list of Beneficiaries that match the  search criteria'
+      description: |
+        ## Future
+        
+        This is a furure planned endpoint
+      
+        ## Datasource 
+        
+        **Datasource** TDATA (xxTTTTTTT)\
+        
+        ## Overview
+      
+        Return a list of beneficiary IDs and basic information 
+        that match the search criteria'
+      operationId: 'beneficiariesList'
+      parameters: 
+        # *** Header Parameters
+        - $ref: '#/parameters/planIDParam'   
+        - $ref: '#/parameters/planTypeParam'
+        - $ref: '#/parameters/planLocationParam'
+        - $ref: '#/parameters/planSystemParam'
+        - $ref: '#/parameters/validatedACRSParm'
+        - $ref: '#/parameters/userIDParm'
+        # *** Path Parameters      
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              # *** FUTURE: Full response schema
+              type: string
+              example: 'Future definition'
+        '400':
+          description: 'Bad request'
+          schema:
+            $ref: '#/definitions/Status400'          
+                  
+
+  
+  
+  # *************************************************************************
+  # *** (beneficiaries/{beneID})  Get demographics for a single beneficiary
+  # *************************************************************************
+  /api/v1/beneficiaries/{beneID}:
+    get:
+      tags:
+        - Beneficiaries
+      summary: 'FUTURE: Get Beneficairy Demographic Information for a single beneficiary.  '
+      description: |
+        ## Future
+        
+        This is a future planned endpoint
+      
+        ## Datasource 
+        
+        TDATA (DCH_ICA_VIEWS.M_DEMOGRAPHICS_SINGLE_CC)
+        
+        ## Overview 
+        
+        Get basic demographics information on a beneficiary.
+        
+        
+        This includes information from the **Client Summary Tab** 
+        of the CC360-Web Application.
+        
+        
+        The demographics information will include information 
+        from the following areas
+        * Demographics (Address, demographics, plan info)
+        * Chronic conditions (Duplicate of other calls???)
+        * Benefit plans
+        * Providers
+        * Last MD OD Claims
+        * Primary Care
+        * Actively managed (Managed in other panels)
+        * Actively receiving (Managed in other panels)
+        * Last Dental
+      operationId: 'beneficiaryDemographics'
+      parameters:
+        # *** Header Parameters
+        - $ref: '#/parameters/planIDParam'   
+        - $ref: '#/parameters/planTypeParam'
+        - $ref: '#/parameters/planLocationParam'
+        - $ref: '#/parameters/planSystemParam'
+        - $ref: '#/parameters/validatedACRSParm'  
+        - $ref: '#/parameters/userIDParm'          
+        #  *** Path Parameters         
+        - $ref: '#/parameters/beneficiaryIDParam'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: object
+            $ref: '#/definitions/BeneficiaryModel'
+        '400':
+          description: 'Bad request'
+          schema:
+            $ref: '#/definitions/Status400' 
+            
+  # *********************************************************************************
+  # *** (beneficiaries/{beneID}/cases) Get list of ICP plans for a single beneficiary
+  # *********************************************************************************
+  /api/v1/beneficiaries/{beneID}/cases:
+    get:
+      tags:
+        - Cases
+      summary: 'FUTURE: Get Interactive Care Plans for a single  Beneficiary'
+      description: |
+        ## Future
+        
+        This is a furure planned endpoint      
+      
+        ## Datasource 
+        SSQL (dbo.FRANK_ICP_GetList)
+        ## Overview
+      
+        Get list of the case Ids with dates and statuses
+      operationId: 'beneficiaryCases'
+      parameters:
+        # *** Header Parameters
+        - $ref: '#/parameters/planIDParam'   
+        - $ref: '#/parameters/planTypeParam'
+        - $ref: '#/parameters/planLocationParam'
+        - $ref: '#/parameters/planSystemParam'
+        - $ref: '#/parameters/validatedACRSParm'     
+        - $ref: '#/parameters/userIDParm'        
+        #  *** Path Parameters        
+        - $ref: '#/parameters/beneficiaryIDParam'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ICPModel'
+        '400':
+          description: 'Bad request'
+          schema:
+            $ref: '#/definitions/Status400'         
+            
+            
+  # *********************************************************************************
+  # *** (beneficiaries/{beneID}/summary) Get Top 3 items for 14 panels
+  # *********************************************************************************           
+  /api/v1/beneficiaries/{beneID}/summary:
+    get:
+      tags:
+        - Summary
+      summary: 'Get "top 3 lists" for 11 ares (Tiles)'
+      description: |
+        
+        ## Datasource 
+        TDATA (DCH_ICA_Views.M_CLIENT_SUMMARY)
+        ## Overview
+      
+        Get the "Top 3 list" for each of 11 focus areas (tiles)
+
+        * Chronic Conditions
+        * Pharmacy
+        * E/D Visits
+        * I/P Admissions
+        * Procedure Codes
+        * Psychrotropics
+        * Antipsychotics
+        * Dental
+        * ED Dental Visits
+        * Recent Providers
+        * BH I/P Admissions
+        
+        
+      operationId: 
+        'beneficiarySummary'
+      parameters:
+        # *** Header Parameters
+        - $ref: '#/parameters/planIDParam'   
+        - $ref: '#/parameters/planTypeParam'
+        - $ref: '#/parameters/planLocationParam'
+        - $ref: '#/parameters/planSystemParam'
+        - $ref: '#/parameters/validatedACRSParm'     
+        - $ref: '#/parameters/userIDParm'        
+        #  *** Path Parameters        
+        - $ref: '#/parameters/beneficiaryIDParam'
+      responses:
+        '200':
+          description: Success
+          # ---
+          examples:
+            application/json:
+              $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/ClientSummary.json
+          schema:
+            type: object
+            $ref: '#/definitions/ClientSummaryModel'
+        '400':
+          description: 'Bad request'
+          schema:
+            $ref: '#/definitions/Status400'     
+                  
+            
+            
+  # *********************************************************************************
+  # *** (beneficiaries/{beneID}/summary/ChronicConditions) Get tile drilldown details
+  # *** The second parameter is the name of the tile
+  # *********************************************************************************           
+  /api/v1/beneficiaries/{beneID}/summary/ChronicConditions:
+    get:
+      tags:
+        - Summary
+      summary: 'FUTURE: Get the drill down details for the Chronic conditions tile'
+      description: |
+        ## Future
+        This is a future planned endpoint.
+        ## Datasource 
+        TDATA (DCH_ICA_PRODUCTION.SP_CLIENT_SUMMARY_DETAILS)
+        ## Overview
+      
+        Returns a list of drill down details for the Chronic Conditions tile
+      operationId: 
+        'beneficiarySummaryChronicCondition'
+      parameters:
+        # *** Header Parameters
+        - $ref: '#/parameters/planIDParam'   
+        - $ref: '#/parameters/planTypeParam'
+        - $ref: '#/parameters/planLocationParam'
+        - $ref: '#/parameters/planSystemParam'
+        - $ref: '#/parameters/validatedACRSParm'     
+        - $ref: '#/parameters/userIDParm'        
+        #  *** Path Parameters        
+        - $ref: '#/parameters/beneficiaryIDParam'
+      responses:
+        '200':
+          description: Success
+          # ---
+          examples:
+            application/json:
+              $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryChronicConditionsTile.json
+          schema:
+            type: object
+            $ref: '#/definitions/SummaryChronicConditionTileModel'
+        '400':
+          description: 'Bad request'
+          schema:
+            $ref: '#/definitions/Status400'         
+                              
+ # *********************************************************************************
+  # *** (beneficiaries/{beneID}/summary/IPAdmissions) Get tile drilldown details
+  # *** The second parameter is the name of the tile
+  # *********************************************************************************           
+  /api/v1/beneficiaries/{beneID}/summary/IPAdmisions:
+    get:
+      tags:
+        - Summary
+      summary: 'FUTURE: Get the drill down details for the IP Admissions tile'
+      description: |
+        ## Future
+        This is a future planned endpoint.
+        ## Datasource 
+        TDATA (DCH_ICA_PRODUCTION.SP_CLIENT_SUMMARY_DETAILS)
+        ## Overview
+      
+        Returns a list of drill down details for the IP Admissions tile
+      operationId: 
+        'beneficiarySummaryIPAdmissions'
+      parameters:
+        # *** Header Parameters
+        - $ref: '#/parameters/planIDParam'   
+        - $ref: '#/parameters/planTypeParam'
+        - $ref: '#/parameters/planLocationParam'
+        - $ref: '#/parameters/planSystemParam'
+        - $ref: '#/parameters/validatedACRSParm'     
+        - $ref: '#/parameters/userIDParm'        
+        #  *** Path Parameters        
+        - $ref: '#/parameters/beneficiaryIDParam'
+      responses:
+        '200':
+          description: Success
+          # ---
+          examples:
+            application/json:
+              $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryIPAdmissionsTile.json
+          schema:
+            type: object
+            $ref: '#/definitions/SummaryIPAdmissionsTileModel'
+        '400':
+          description: 'Bad request'
+          schema:
+            $ref: '#/definitions/Status400'         
+            
+            
+  # *********************************************************************************
+  # *** (beneficiaries/{beneID}/profile) Get Yes/No for all categories in profile
+  # *********************************************************************************
+  /api/v1/beneficiaries/{beneID}/profile:
+    get:
+      tags:
+        - Profiles
+      summary: 'FUTURE: Get Yes/No for all categories in the Client Summary'
+      description: |
+        ## Future
+        
+        This is a furure planned endpoint      
+      
+        ## Datasource 
+        TDATA (DCH_ICO_VIEWS.M_CLIENT_PROFILE)
+        ## Overview
+      
+        Get a yes/no status for each of the categories of the Client/Summary.
+      operationId: 'beneficiaryProfile'
+      parameters:
+        # *** Header Parameters
+        - $ref: '#/parameters/planIDParam'   
+        - $ref: '#/parameters/planTypeParam'
+        - $ref: '#/parameters/planLocationParam'
+        - $ref: '#/parameters/planSystemParam'
+        - $ref: '#/parameters/validatedACRSParm'     
+        - $ref: '#/parameters/userIDParm'        
+        #  *** Path Parameters        
+        - $ref: '#/parameters/beneficiaryIDParam'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ProfileModel'
+        '400':
+          description: 'Bad request'
+          schema:
+            $ref: '#/definitions/Status400'         
+            
+            
+  # *********************************************************************************
+  # *** beneficiaries/{beneID}/profile/ActivelyReceiving 
+  # *** (PIHP OP/Community Based Service)
+  # *********************************************************************************
+  /api/v1/beneficiaries/{beneID}/profile/ActivelyReceiving:
+    get:
+      tags:
+        - Profiles
+      summary: 'FUTURE: Get the details for the PIHP OP/Community Based Service category of profile'
+      description: |
+        ## Future
+        This is a future planned endpoint         
+        ## Datasource 
+        TDATA (DCH_ICA_VIEWS.ACTIVELY_RECEIVING)
+        ## Overview
+      
+        This is known as the PIHP OP/Community Based Service on the web page.
+        Get the detail drill down information for this category.
+      operationId: 'beneficiaryProfileActivelyReceiving'
+      parameters:
+        # *** Header Parameters
+        - $ref: '#/parameters/planIDParam'   
+        - $ref: '#/parameters/planTypeParam'
+        - $ref: '#/parameters/planLocationParam'
+        - $ref: '#/parameters/planSystemParam'
+        - $ref: '#/parameters/validatedACRSParm'     
+        - $ref: '#/parameters/userIDParm'        
+        #  *** Path Parameters        
+        - $ref: '#/parameters/beneficiaryIDParam'
+      responses:
+        '200':
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ProfileActivelyReceivingModel'
+        '400':
+          description: 'Bad request'
+          schema:
+            $ref: '#/definitions/Status400'         
+            
+            
+# *****************************************************************************
+#   Plan - Goal - Task - Note Hierarchy
+# *****************************************************************************
+
+#                                +------+
+#                   +------------+ Plan +--------+
+#                   |            +------+        |
+#                   |               |            |
+#                +--v---+       +---v--+     +---v--+
+#            +---+ Goal +-+     | Goal |     | Goal |
+#            |   +------+ |     +------+     +------+
+#            |            |         |
+#           +v-----+ +----v-+   +---v--+
+#      +----+ Task | | Task |   | Task |
+#      |    +------+ +------+   +------+
+#      |        |          |
+#    +-v----+ +-v----+ +---v--+
+#    | Note | | Note | | Note |
+#    +------+ +------+ +------+
+
+
+              
+  # *********************************************************************************
+  # *** (beneficiaries/{beneID}/cases/{caseID]) Details of a single ICP case
+  # *********************************************************************************
+  /api/v1/beneficiaries/{beneID}/cases/{caseID}:
+    get:
+      tags:
+        - Cases
+      summary: 'FUTURE: Get an Interactive Care Plan Details for a single case for a single beneficiary'
+      description: |
+        ## Future
+        This is a future planned endpoint
+        
+        ## Datasource
+        SSQL (dbo.FRANK_ICP_GetCareTeamTabData)
+        
+         This SSQL SP returns 2 rowsets.  These 2 rowsets are combined in this response.
+        
+        ## Overview
+        Get information about the care team members, CMH, PIHP, MHP and professionals
+      operationId: 'beneficaryTeamDetails'
+      parameters:
+        # *** Header Parameters
+        - $ref: '#/parameters/planIDParam'   
+        - $ref: '#/parameters/planTypeParam'
+        - $ref: '#/parameters/planLocationParam'
+        - $ref: '#/parameters/planSystemParam'
+        - $ref: '#/parameters/validatedACRSParm'  
+        - $ref: '#/parameters/userIDParm'        
+        #  *** Path Parameters        
+        - $ref: '#/parameters/beneficiaryIDParam'
+        - $ref: '#/parameters/caseIDParam'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ICPTeamModel'
+        '400':
+          description: 'Bad request'
+          schema:
+            $ref: '#/definitions/Status400'         
+            
+  # ***************************************************************************************
+  # *** (beneficiaries/{beneID}/cases/{caseID])/goals  List of goals for a single plan
+  # **************************************************************************************
+  /api/v1/beneficiaries/{beneID}/cases/{caseID}/goals:
+    get:
+      tags:
+        - Cases
+      summary: 'FUTURE: Get list of the goals for a specific plan'
+      description: |
+        ## Future
+        This is a future planned endpoint
+        
+        ## Datasource 
+        SSQL (dbo.FRANK_ICP_GetGoalsTasksList)
+        
+        ## Overview
+        Get list of the goals for a special care plan.  
+        
+        For each plan ther may be zero, one or multiple plans
+      
+      operationId: 'beneficaryCaseGoals'
+      parameters:
+        # *** Header Parameters
+        - $ref: '#/parameters/planIDParam'   
+        - $ref: '#/parameters/planTypeParam'
+        - $ref: '#/parameters/planLocationParam'
+        - $ref: '#/parameters/planSystemParam'
+        - $ref: '#/parameters/validatedACRSParm'   
+        - $ref: '#/parameters/userIDParm'        
+        #  *** Path Parameters        
+        - $ref: '#/parameters/beneficiaryIDParam'
+        - $ref: '#/parameters/caseIDParam'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ICPGoalModel'
+        '400':
+          description: 'Bad request'
+          schema:
+            $ref: '#/definitions/Status400'                 
+            
+  # *************************************************************************************************
+  # *** (beneficiaries/{beneID}/cases/{caseID])/goals/{goalID}  List of tasks/notes for a single goal
+  # *************************************************************************************************
+  /api/v1/beneficiaries/{beneID}/cases/{caseID}/goals/{goalID}:
+    get:
+      tags:
+        - Cases
+      summary: 'FUTURE: Get list of the tasks and notes for a specific goal'
+      description: |
+        ## Future
+        This is a future planned endpoint   
+        
+        ## Datasource
+        SSQL (dbo.FRANK_ICP_GetGoalsTasksList)
+        
+        ## Overview
+        Get list of the tasks and associated notes for a specific goal.
+      
+        For each goal there may be multiple (tasks) and (notes).
+      operationId: 'beneficaryGoalTasksNotes'
+      parameters:
+        # *** Header Parameters
+        - $ref: '#/parameters/planIDParam'   
+        - $ref: '#/parameters/planTypeParam'
+        - $ref: '#/parameters/planLocationParam'
+        - $ref: '#/parameters/planSystemParam'
+        - $ref: '#/parameters/validatedACRSParm' 
+        - $ref: '#/parameters/userIDParm'        
+        #  *** Path Parameters              
+        - $ref: '#/parameters/beneficiaryIDParam'
+        - $ref: '#/parameters/caseIDParam'
+        - $ref: '#/parameters/goalIDParam'   
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/ICPTaskModel'
+        '400':
+          description: 'Bad request'
+          schema:
+            $ref: '#/definitions/Status400'         
+            
+            
+  # ***********************************************************************
+  # *** (plans) List of all the plans along with the DUA status
+  # *** NOTE: This is under revision and approval
+  # *** NOTE: This is also known as agencies
+  # ***********************************************************************            
+  /api/v1/plans:  
+    get:
+      tags:
+        - Plans
+      summary: 'Get a list of the Plans/Agencies'
+      description: |
+      
+        ## Datasource
+        SSQL (dbo.FRANK_PlanMaint_GetAllPlanDUAs)
+        
+        ## Overview
+        Get a list of the Plans/Agencies including Plan ID, type, EHR System and location
+       
+        **NOTE** The schema for this endpoint is under review by MDHHS
+      
+        The example only displays a partial list of plans for clarity.
+      operationId: 'planList'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/PlanModel'
+          examples:
+            application/json:
+              $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/PlansDUAShort.json          
+         
+            
+  
+            
+            
+#######################################################################
+#                             DEFINITIONS                             #
+#######################################################################
+definitions:
+  # **************************************************************************
+  #  API definitions:
+  # **************************************************************************
+  
+  Status400:
+    description: 'Bad request. Request was received that could not be understood by the server. This could be cause by any of the issues below.'
+    type: object
+    properties:
+      INVALID_BENEFICARY:
+        type: string
+        example: 'The beneficary ID if supplied was not formatted correctly.Beneficiary ID is 10 digits, zero filled'
+      INVALID_CASE:
+        type: string
+        example: 'The case ID if supplied was not formatted correctly.Case ID is a integer number, np decimal point or commas.'
+      INVALID_GOAL:
+        type: string
+        example: 'The Goal ID if supplied was not formatted correctly.  Goal ID is a integer number, no decimal point or commas.  '
+  
+ 
+ 
+             
+  
+  # ****************************************************************************
+  # ** Beneficiary Model
+  # ****************************************************************************
+  BeneficiaryModel:
+    description: 'Basic address and plan information for a beneficiary'
+    type: object
+    properties:
+      MEMBER_ID:
+        description: 'The 10 digit identifier for a beneficiary'
+        type: string
+        example: '9999999990'
+      FIRST_NAME:
+        description: 'The beneficiaries first name'
+        type: string
+        example: 'William'
+      LAST_NAME:
+        description: 'The beneficiaries last name'
+        type: string
+        example: 'Adama'
+      ADDRESS:
+        description: |
+          The street address portion of the benficiaries address.
+          Beneficiaries who are not enrolled will not have an address
+        type: string
+        example: '192 Carl Street'
+      CITY:
+        description: 'The city name of the benficiaries address'
+        type: string
+        example: 'Buffalo'
+      STATE:
+        description: 'The state of the beneficaries state'
+        type: string
+        example: 'MI'
+      ZIP:
+        description: 'The 5 digit zip code for the beneficaries address'
+        type: string
+        example: '48823'
+      DOB:
+        description: 'The beneficiaries date of birth'
+        format: date-time
+        type: string
+        example: '1953-07-07'
+      DOD:
+        description: 'The beneficiaries date of death, this field may be blank'
+        format: date-time
+        type: string
+        example: ''
+      COR:
+        description: 'The county code of residence for the beneficiary'
+        type: string
+        example: '11'
+      GENDER:
+        description: 'The gender for the beneficiary'
+        type: string
+        enum:
+        - 'M'
+        - 'F'
+        - 'U'
+        - 'T'
+        example: 'M'
+      DUAL:
+        description: 'Indicates if the benficiary is both Medicare and Medicaid'
+        type: string
+        example: 'NO'
+      COA:
+        description: 'The county code for something begining with an "A"'
+        type: string
+        example: '11'
+      ETHNICITY:
+        type: string
+        example: 'Non Hispanic'
+      RACE:
+        type: string
+        example: 'Non-Migrant White, not of Hispanic Origin'
+      CMHID:
+        description: 'The ID of the CMH'
+        type: string
+        example: '39'
+      CONTRACTNO:
+        type: string
+        example: '962-963-4485'
+      MAGI_CATEGORY:
+        type: string
+        example: 'A-Children under Age 19'
+      CurrentlyEnrolledFlag:
+        description: 'Indicates if the beneficiary is currently enrolled'
+        type: string
+        example: 'N'
+      ChronicConditions:
+        description: |
+          A list of chronic conditions.  
+          There may be zero, one or many items
+        type: array
+        items:
+          $ref: '#/definitions/ChronicConditionsModel'
+      BenefitPlans:
+        description: |
+          A list of the benefit plans this beneficiary is a member of (Enrolled)
+        type: array
+        items:
+          $ref: '#definitions/BenefitPlansModel'
+            
+
+
+
+  # ********************************************************************************
+  # Chronic Conditions model
+  # ********************************************************************************
+  ChronicConditionsModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.
+      A list of the chronic conditions for a beneficiary.  
+      There may be zero, one or more items
+    type: object
+    properties:    
+      BENEFICIARY_ID:
+        description: '10 Digit code identifying the benefiairy '
+        type: string
+        example: '9999999990'
+      HIST:
+        type: string
+        example: '1   '
+      HIST_COUNT:        
+        format: int32
+        type: integer
+        example: 2
+      CURR:
+        format: string
+        example: '0   '
+      CURR_COUNT:
+        format: int32
+        type: integer
+        example: 0
+      CONDITIONCODE:
+        type: string
+        example: "COPD"
+      CONDITIONDESC:
+        type: string
+        example: "CHRONIC OBSTRUCTIVE PULMONARY DISORDER"
+      MA_PLAN_ID:
+        type: string
+        example: '7851514'
+      PIHP_PLAN_ID:
+        type: string
+        example: '2653182'
+      CMH_PLAN_ID:
+        type: string
+        example: '3512811'
+      COR:
+        description: 'County code for count of reesidence'
+        type: string
+        example: '11'
+      COF:
+        description: 'County code for County of Financial responsibility'
+      ICO_PAN_ID:
+        type: string
+        example: "00"
+            
+  # ********************************************************************************
+  # Benefit Plans Model
+  # ********************************************************************************
+  BenefitPlansModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.    
+      List of the benefit plans the beneficiary is currently a member of (Enrolled)
+    type: object
+    properties:
+      BEN_ID:
+        type: string
+        example: "9999999990"
+      BEN_PLAN: 
+        type: string  
+        example: "MA-MC"
+        
+  # ********************************************************************************
+  # Profile Model (Overview panels only)
+  # ********************************************************************************
+  ProfileModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.        
+      There will one item in the response for each of 
+      the categories of the Client Profile
+      
+      Current list of categories are-
+      
+      * Adult Foster Care
+      * PIHP OP/Community Based Service
+      * Psychiatric IP Service
+      * Enrolled in Health Home
+      * Youth Foster Care
+      * PIHP Service (last 6 months)      
+      * Current or Past CSHCS
+      * Healthy Michigan Plan
+      * Well Child History
+      * Home Help
+      * PIHP Supports Coordinator/Care Management
+      * PIHP QI Data
+      * Health Risk Assessment/Survey
+      * Home Health
+      * PIHP Service (last 12 months)
+      * Dental Claims
+      * Flint Waiver Population
+      * MI Choice
+    type: object
+    properties:
+      ItemCount:
+        format: int32
+        type: integer
+        example: 2
+      DisplayText:
+        type: string
+        example: 'Adult Foster Care'
+      ContentCode:
+        description: |
+          This code is used in the API call to get additional details for that profile.
+        type: string
+        example: 'AdultFosterCare'
+      DetailsAsLink:
+        description: |
+          The value can be **Yes** or **No**.  A **Yes** may not have details to drilldown to.
+          MDHHS has determined that not all results can be viewed for some instances.
+        type: string
+        example: 'Yes'
+
+  # ********************************************************************************
+  # Profile Actively Receiving Model (PIHP OP/Community Based Service)
+  # ********************************************************************************
+  ProfileActivelyReceivingModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.        
+      This is the drill down details for the PIHP OP/Community Based Service
+      profile for the benefiairy.
+    type: object
+    properties:    
+      "PIHP ID": 
+        type: string
+        example: '2813568'
+      PIHP:
+        type: string
+        example: 'Detroit Wayne Mental Hlth Authority'
+      "CMHSP ID":
+        type: string
+        example: "1183310"
+      CMHSP:
+        type: string
+        example: 'Detroit Wayne Mental Hlth Authority'
+      FromDate:
+        type: string
+        example: "2017-06-01"
+      Procedure:
+        type: string  
+        example: 'Psytx w pt 30 minutes'
+      ProcedureCode:
+        type: string
+        example:   "90832 "
+      PlaceOfService:
+        type: string
+        example: "Office"
+      PlaceOfServiceID:
+        type: string
+        example: "11"
+      RevenueCode:
+        type: string
+      RevenueCodeDesc:
+        type: string
+      ERN:
+        type: string
+        example: "D090100679"
+      TCN:
+        type: string
+        example: "331716610222540000"
+      
+  # ************************************************************************
+  # ** Client Summary Model
+  # ************************************************************************     
+  ClientSummaryModel:
+    description: |
+      **NOTE** This model describes a single object.  
+      There are 11 areas (Tiles) of summaries that make up this model.
+      All 11 tiles are returned in a single object.
+    type: object  
+    properties:
+      ChronicConditions:
+        description: |
+          These are the Top 3 Chronic conditions
+        type: array
+        items:
+          $ref: '#/definitions/SummaryChronicConditionsModel'
+      Pharmacy:
+        description: |
+          These are top 3 pharmacy fills
+        type: array
+        items:
+          $ref: '#/definitions/SummaryPharmacyModel'   
+      EDVisits:
+        description: |
+          These are most recent 3 visits
+        type: array
+        items:
+          $ref: '#/definitions/SummaryEDVisitsModel'     
+      IPAdmissions:
+        description: |
+          List of the last 3 admissions. 
+        type: array
+        items:
+          $ref: '#/definitions/SummaryIPAdmissionsModel'   
+      ProcedureCodes:
+        description: |
+          List of the top 3 codes. 
+        type: array
+        items:
+          $ref: '#/definitions/SummaryProcedureCodesModel'   
+      Psychotropics:
+        description: |
+          List of the top 3 psychrotropicss. 
+        type: array
+        items:
+          $ref: '#/definitions/SummaryPsychotropicsModel'   
+      Antipsychotics:
+        description: |
+          List of the top 3 Antipsychotics. 
+        type: array
+        items:
+          $ref: '#/definitions/SummaryAntipsychoticsModel'           
+      Dental:
+        description: |
+          List of the most recent 3 dental visits.
+        type: array
+        items:
+          $ref: '#/definitions/SummaryDentalVisitsModel'
+      ERDental:
+        description: |
+          List of the most recent 3 ED dental visits
+        type: array
+      RecentProviders:
+        description: |
+           List of the most recent 3 providers
+        type: array
+        items:
+          $ref: '#/definitions/SummaryRecentProvidersModel'
+      BHIPAdmissions:
+        description: |
+          List of the most recent 3 BH Inpatient admissions
+        type: array
+        items:
+          $ref: '#/definitions/SummaryBHIPAdmissionsModel'
+        
+  # ************************************************************************
+  # ** Client Summary - Chronic Conditions Model
+  # ************************************************************************       
+  SummaryChronicConditionsModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.        
+      List of the top 3 chronic conditions.
+    type: object
+    properties:
+      Conditions:
+        type: string
+        example: 'DIABETES'
+      CurrentCount:
+        format: int32
+        type: integer
+        example: 14
+      TILE_IND:
+        description: |
+          Indicates the risk status for this tile
+          * Blank - Unknown
+          * L - Low
+          * M - Medium
+          * H - High
+        type: string
+        example: 'H    '
+ 
+  # ************************************************************************
+  # ** Client Summary - Pharmacy Model
+  # ************************************************************************       
+  SummaryPharmacyModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.        
+      List of the top 3 pharmacy fills.
+    type: object
+    properties:
+      GenericDrugName:
+        type: string
+        example: 'ALPRAZOLAM'
+      Number of Fills:
+        format: int32
+        type: integer
+        example: 14
+      Most Recent Fill:
+        type: string
+        example: '2017-06-09'
+            
+  # ************************************************************************
+  # ** Client Summary - E/D Visits Model
+  # ************************************************************************       
+  SummaryEDVisitsModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.        
+      List of the most recent 3 visits.
+    type: object
+    properties:
+      VisitDate:
+        type: string
+        example: '12/27/2016'
+      Facility:
+        type: string
+        example: '1134144801 -  HENRY FORD HOSPITAL '
+      TILE_IND:
+        description: |
+          Indicates the risk status for this tile
+          * Blank - Unknown
+          * L - Low
+          * M - Medium
+          * H - High
+        type: string
+        example: 'L    '    
+            
+  # ************************************************************************
+  # ** Client Summary - I/P Admissions Model
+  # ************************************************************************       
+  SummaryIPAdmissionsModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.        
+      List of the most recent 3 admissions.
+    type: object
+    properties:
+      AdmitDate:
+        type: string
+        example: '2016/02/16'
+      FacilityName:
+        type: string
+        example: '1952307852 -  MUNSON MEDICAL CENTER '
+      TILE_IND:
+        description: |
+          Indicates the risk status for this tile
+          * Blank - Unknown
+          * L - Low
+          * M - Medium
+          * H - High
+        type: string
+        example: 'L    '              
+          
+  # ************************************************************************
+  # ** Client Summary - Procedure Codes Model
+  # ************************************************************************       
+  SummaryProcedureCodesModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.        
+      List of the most Top 3 codes.
+    type: object
+    properties:
+      Procedure Code:
+        type: string
+        example: '99213 -  Office/outpatient visit est'
+      Current Count:
+        format: int32
+        type: integer
+        example: 3
+        
+  # ************************************************************************
+  # ** Client Summary - Psychtropics Model
+  # ************************************************************************       
+  SummaryPsychotropicsModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.        
+      List of the most Top 3 Psychrotropics.
+    type: object
+    properties:
+      GenericDrugName:
+        type: string
+        example: 'DIVALPROEX SODIUM'
+      NumberOfFills:
+        format: int32
+        type: integer
+        example: 3
+      MostRecentFill:
+        type: string
+        example: '2016-09-19'    
+  
+        
+  # ************************************************************************
+  # ** Client Summary - Antipsychotics Model
+  # ************************************************************************       
+  SummaryAntipsychoticsModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.        
+      List of the most Top 3 Antipsychotics.
+    type: object
+    properties:
+      GenericDrugName:
+        type: string
+        example: 'BREXPIPRAZOLE'
+      NumberOfFills:
+        format: int32
+        type: integer
+        example: 2
+      MostRecentFill:
+        type: string
+        example: '2017-06-30'     
+        
+  # ************************************************************************
+  # ** Client Summary - Dental Visits Model
+  # ************************************************************************       
+  SummaryDentalVisitsModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.        
+      List of the most recent 3 dental visits
+    type: object
+    properties:
+      VisitDate:
+        type: string
+        example: '02/22/2016'
+      Provider:
+        type: string
+        example: 'Hoover Family Dental '
+      TILE_IND:
+        description: |
+          Indicates the risk status for this tile
+          * Blank - Unknown
+          * L - Low
+          * M - Medium
+          * H - High
+        type: string
+        example: 'L    '              
+        
+  # ************************************************************************
+  # ** Client Summary - Recent Providers Model
+  # ************************************************************************       
+  SummaryRecentProvidersModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.        
+      List of the most last 3 provider visits
+    type: object
+    properties:
+      MostRecentVisit:
+        type: string
+        example: '2017-05-08'
+      ProviderID:
+        type: string
+        example: '1952791105'
+      ProviderName:
+        type: string
+        example: 'BEST URGENT CARE PC'
+      TotalVisits:
+        format: int32
+        type: integer
+        example: 3             
+        
+        
+  # ************************************************************************
+  # ** Client Summary - BH I/P Admissions Model
+  # ************************************************************************       
+  SummaryBHIPAdmissionsModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.        
+      List of the most recent 3 medical health in patient admissions
+    type: object
+    properties:
+      AdminDate:
+        type: string
+        example: '2017-05-05'
+      FacilityName:
+        type: string
+        example: '1144381245 -  HARBOR OAKS HOSPITAL '
+      TILE_IND:
+        description: |
+          Indicates the risk status for this tile
+          * Blank - Unknown
+          * L - Low
+          * M - Medium
+          * H - High
+        type: string
+        example: 'H    '    
+        
+         
+  # ************************************************************************
+  # ** Client Summary Chronic Conditions Tile (Drill Down) Model
+  # ************************************************************************        
+  SummaryChronicConditionTileModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.        
+      List of the Chronic conditions with tile drill down details
+    type: object
+    properties:
+      BeneficiaryID:
+        type: string
+        example: '9999999903'
+      Conditions:
+        type: string
+        example: 'DIABETES'
+      Last 6 Months:
+        type: string
+        example: '         14'  
+      7-12 Months:
+        type: string
+        example: '         37'
+      13-18 Months:
+        type: string
+        example: '        109'
+  
+  # ************************************************************************
+  # ** Client Summary IP Admissions Tile Model
+  # ************************************************************************        
+  SummaryIPAdmissionsTileModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.        
+      List of the IP Admissions with tile drill down details
+    type: object
+    properties:
+      BeneficiaryID:
+        type: string
+        example: '9999999903'
+      AdmitDate: 
+        type: string
+        example: "2017-04-30"
+      DischargeDate: 
+        type: string
+        example: "2017-05-01"
+      FacilityName: 
+        description: |
+          The name of the facility where the in patient admission occured.
+        type: string
+        example: "2234455666 - St Marys Cental Hospital"
+      LengthOfStay: 
+        format: int32
+        type: integer
+        example : 2
+      PrimaryDX: 
+        type: string
+        example: "I639 -  CEREBRAL INFARCTION UNSPECIFIED"
+      HospitalType: 
+        type: string
+        example: 
+      TCN: 
+        description: |
+          Transaction Control Number, uniquely identifies transaction in CHAMPS
+        type: string
+        example: "9988776655443327777"
+  
+  
+  
+  # ************************************************************************
+  # ** ICP Model
+  # ************************************************************************
+  ICPModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.    
+      This model displays the ICP cases for the benficiary.
+    type: object
+    properties:
+      CaseID:
+        description: 'ID that uniquely identifies a ICP Plan (Case)'
+        format: int32
+        type: integer
+        example: 596
+      BeginDate:
+        description: ''
+        format: date-time
+        type: string
+        example: '2017-04-14'
+      CloseDate:
+        format: date-time
+        type: string
+        example: '2017-04-14'
+      DisplayBeginDate:   
+        description: 'The reformatted mm/dd/yyyy for the BeginDate field'
+        type: string
+        example: '04/14/2017'
+      DisplayEndDate:
+        description: 'The reformatted mm/dd/yyyy for the EndDate field'      
+        type: string
+        example: '04/14/2017'
+      Owner:
+        type: string
+        example: 'dane, samatha'
+      Status:
+        description: 'The status of this case (ie: Cancelled, Closed, Active)'
+        type: string
+        example: 'Cancelled'
+      ClonePlan:
+        type: string
+        example: 'Clone plan (596) dane, samatha'
+
+  # ***************************************************************************
+  # ** ICP Team Model
+  # ***************************************************************************
+  ICPTeamModel:
+    description: |
+      **NOTE** This model describes a single object.    
+      This single object display the management team and any optional profressionals.
+    type: object
+    properties:
+      CaseID:
+        description: 'ID that uniquely identifies a ICP Plan (Case)'
+        format: int32
+        type: integer
+        example: 596
+      CareTeamID:
+        format: int32
+        type: integer
+        example: 91
+      CMHManger:
+        description: |
+          The name of the CHP Manager for this care plan, this may be blank
+        type: string
+        example: 
+      PIHPManager:
+        description: |
+          The name of the PIHP manager for this care plan, this may be blank
+        type: string
+        example: 'Heather Hoonhout'
+      MHPManager:
+        description: |
+          The name of the MHP manager for this care plan, this may be blank
+        type: string
+        example: 'Regina Hall (UnitedHeathCare)'
+      ActiveCareProvider:
+        description: |
+          The name of the active care provider for this care plan, 
+          this may be blank
+        type: string
+        example: 
+      MHPUserID:  
+        description: 'The SOM user id for the MHP user, this may be blank'
+        type: string
+        example: 'schustofvitch8763'
+      PIHPUserID:
+        description: 'The SOM user if for the PIHP user, this may be blank'
+        example:
+      CMHUserID:
+        description: 'The SOM user id for the CMH User, this may ne blank'
+        example:
+      Professionals:
+        description: |
+          List of the profressionals that are part of the care team, 
+          there may not be any professionals
+        type: array
+        items:  
+          $ref: '#/definitions/ICPProfessionalModel'
+          
+          
+  # **************************************************************************
+  # ** ICP Professional Model
+  # **************************************************************************
+  ICPProfessionalModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.    
+      This model retruns the list of optional professionals.
+    type: object
+    properties:
+      CareTeamID: 
+        format: int32
+        type: integer
+        example: 91
+      ProfressionalName: 
+        type: string
+        example: 'Tata Einstein, MD'
+      Profession: 
+        type: string
+        example: 'PCP'
+      Agency:
+        description: 'Name of the agency, this may be blank'
+        type: string
+        example:
+      AddedOn:       
+        format: date-time
+        type: string
+        example: "2016-10-03 17:06:45.827"
+      DisplayAddedOn:
+        type: string
+        example: '10/03/2016'
+      ListID: 
+        description: 'Unique identifier for the case/professional'
+        format: int32
+        type: integer
+        example: 98             
+        
+  # ****************************************************************************
+  # ** ICP Goal Model
+  # ****************************************************************************
+  ICPGoalModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.   
+      This model are the goals associated with a case.
+    type: object
+    properties:
+      GoalID: 
+        description: |
+          This is unique identifier for each goal.  This is a PK field only
+        format: int32
+        type: integer
+        example: 2625    
+      BeneficiaryID:
+        format: strring
+        example: '9999999990'
+      CaseID: 
+        description: 'Identifies which case this goal is related to'
+        format: int32
+        type: integer
+        example: 687
+      GoalCode:
+        description: |
+          Identifies the goal uniqueley within a plan, 
+          this used to drill down into tasks and notes'
+      GoalDesc: 
+        description: 'Identifies what the goal details are'
+        type: string
+        example: |
+          Individual will be referred to specialist 
+          (providers necessary to treat client’s conditions)
+      StatusCode:
+        description: |
+          Unique ID for a status, 
+          the description for this is in the GoalStatus below
+        type: string
+        example: "10"
+      GoalStatus:
+        type: string
+        example: 'Open'
+      Hidden:
+        description: |
+          Indicates if this goal is hidden and not in use for this plan
+        type: string
+        example: "False"
+      RankOrder:
+        description: '????'  
+        format: int32
+        type: integer
+        example: 1
+        
+  # *********************************************************************************
+  # ** ICP Task Model
+  # *********************************************************************************
+  ICPTaskModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.    
+      This model are the tasks associated with a task.
+    type: object
+    properties:
+      GoalCode: 
+        description: 'Uniquely identifies a the parent goal within a ICP Plan'
+        type: string
+        example: '50'
+      TaskCode:
+        description: 'Unique identifier for a task within a goal'
+        type: string
+        example: '53'
+      TaskDesc:
+        description: 'Description of the task in free format'
+        type: string
+        example: |
+          Individual will speak to PCP regarding appropriate referral and process
+      TaskStatusCode:
+        description: 'Unique identifier for the status of a task'
+        type: string
+        example: '10'
+      StatusDesc:
+        description: 'Full text for the TaskStatusCode above'
+        type: string
+        example: 'Open'
+      TaskAddedBy: 
+        description: 'Name of person who added this task to the goal'
+        type: string
+        example: 'erber, debra'
+      TaskAddedOn:
+        description: 'Date the task was added to the goal'
+        type: string
+        example: '05/24/2017'
+      TaskID:
+        description: 'Unique identifier for a specific task'
+        format: int32
+        type: integer
+        example: 3220
+      TaskAssignedToID:
+        description: |
+          Optional information about who is assigned to perform this task
+        type: string
+        example: 'debra erber (North Country CMH)'
+      Notes:
+        type: array
+        items:
+          $ref: '#/definitions/ICPNoteModel'
+          
+          
+       
+        
+  # ***********************************************************************
+  # ** ICP Note Model
+  # ***********************************************************************
+  ICPNoteModel:
+    description: |
+      **NOTE** This model describes a single object in an array of zero to many objects.   
+      This model reflects the notes attached to a task
+    type: object
+    properties:
+      TaskCode: 
+        description: 'Unique identifier for a task within a goal'
+        type: string
+        example: '53'
+      TaskDesc:
+        description: 'Description of the task in free format'
+        type: string
+        example: |
+          Individual will speak to PCP regarding appropriate referral and process
+      Note: 
+        description: 'The note details'
+        type: string
+        example: |
+          Met with Alcona CHW 5-24-17.  Provider will refer to GI specialist.  
+          Alcona Care Manager will continue to encourage meetings and follow up with client.
+      TaskStatusCode:
+        description: 'Unique identifier for the status of a task'
+        type: string
+        example: '10'
+      StatusDesc:
+        description: 'Full text for the TaskStatusCode above'
+        type: string
+        example: 'Open'       
+      NoteAddedOn:
+        description: 'Date the notes was added to this task'
+        type: string
+        example: '05/24/2017'
+      NoteAddedBy:
+        description: 'Name of person who added this note to the task'
+        type: string
+        example: 'erber, debra'
+      TaskID:
+        description: 'The unique identifier for the task this nore belongs to'
+        format: int32
+        type: integer
+        example: 3220
+      NoteID:
+        description: 'Unique identifier for this note'
+        type: integer
+        example: 9684
+        
+        
+        
+  # ****************************************************************************
+  # ** Plan Model
+  # ****************************************************************************
+  PlanModel:
+    description: |
+      **NOTE** This model describe a single object in an array of objects returned.
+      The object is the plans and the status of the Data User Agreements (DUA).
+      The APIDUA indicates if this plan has been granted access to the CC360-API.
+    type: object
+    properties:
+      PlanType: 
+        description: 'Indicates which type of provider for the plan. PIHP, MHP, ICO, etc'
+        type: string
+        example: 'PIHP'
+        enum: 
+          - CGHAP
+          - ICO
+          - LCW
+          - LHD
+          - MHP
+          - PIHP
+        maxLength: 10
+      PlanID:
+        description: 'This is the code used to help identify a specific plan'
+        type: string
+        example: '13'
+        maxLength: 50
+      PlanName:
+        type: string
+        example: 'Macomb Co CMH services'
+        maxLength: 500
+      EHRSystem:    
+        description: |
+          Type type of Electronic Health Records system that the consumer 
+          is proxy for this request
+        
+          Default is 'Any'
+        type: string
+        example: 'CSE'
+        maxLength: 30
+      Location:
+        description: |
+          The location of the plan that the consumer is proxy for this request.  
+          It is a simple text field to identify location 
+          (ie Lansing, Grand Rapids, Traverse City
+        
+          Default is 'Any'
+        type: string
+        maxLength: 30
+        example: 'Grand Rapids'
+      ExtractDUA: 
+        description: |
+          Indicates that this Plan ID/Type/EHRSystem/Location 
+          has a valid Data Usaer Agreement for extracting data 
+          from the CC360 web application.
+        type: string
+        example: 'Active'        
+        enum: 
+          - 'Active'
+          - 'Inactive'
+      WebDUA:
+        description: |
+          Indicates that thisd Plan ID/TYpe/EHRSystem/Location 
+          has a valid data user agreement for using the CC360 web application.
+        type: string
+        example: 'Active'
+        enum: 
+          - 'Active'
+          - 'Inactive'        
+      APIDUA:
+        description: |
+          Indicates that this Plan ID/Type/EHRSystem/Location 
+          has a valid data user agreement for using the CC360 API
+        type: string
+        example: 'Active'
+        enum: 
+          - 'Active'
+          - 'Inactive'

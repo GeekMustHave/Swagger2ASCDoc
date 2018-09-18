@@ -1,0 +1,55 @@
+////
+These are the CC360 web application screen shots that relate back to the API calls
+////
+
+:imagesdir: ./images
+:pagenums:
+:experimental:
+:source-hightlighter: pygments
+:icons: font
+
+== Screen Shot examples
+
+The following screen shots are provided to help API developers and consumers know what API responses 
+relate to a specific Page/Tab/Tile.
+
+=== Beneficiary More (Details)
+
+Each beneficiary has additional details that can be viewed by clicking on the kbd:[More..] button.
+ 
+.Beneficary - More (Details)
+image::BeneficiaryMore.png[Beneficiary Details, align='center']
+
+
+=== Client Summary Tab
+
+The client summary tab is the default tab displayed, on the care coordination page, 
+when the beneficiary is being displayed.
+
+.Care Coordination  - Client Summary Tab
+image::ClientSummaryTab.png[Client Summary, align='center']
+
+=== Client Summary Drill Down
+
+Each of the panels in the Client Summary have details that can be drilled into.
+In this example the *ED Visits - Most Recent 3* panel had been drilled into.
+
+ 
+.Client Summary - Sample Details
+image::ClientSummaryDrilldown.png[Summary Drilldown, align='center']
+
+=== Client Profile Tab
+
+The client profile tab displays if the beneficiary has any detail information in the categories indicated.
+
+ 
+.Client Profile Tab
+image::ClientProfile.png[Client Profile Tab, align='center']
+
+==== Client Profile Drilldown
+
+Any of the client profile categories that are marked as *Yes* will have details that can be drilled into.
+
+ 
+.Client Profile - Sample Details
+image::ClientProfileDrilldownl.png[Profile Drilldown, align='center']

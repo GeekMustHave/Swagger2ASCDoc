@@ -1,0 +1,94 @@
+= CC360-API Documentation +++<br>+++Optum Government Solutions
+John Schuster <John.schuster@PhoenixWorkgrpup.com>
+v2.1v, 08/13/2018: Reference
+:Author: John HR Schuster
+:Company: Optum Government Solutions
+:toc: left
+:toclevels: 4:
+:imagesdir: ./images
+:pagenums:
+:experimental:
+:source-hightlighter: pygments
+:icons: font
+:docdir: */documents
+:github: Github repository
+:linkattrs:
+:seclinks:
+:title-logo-image: optum-mdhhs-logo5.png
+
+The following documentation outline the usage of the CC360-API.
+
+.What is an API?
+[quote, Ben Shneiderman]
+A picture is worth a thousand words. An interface is worth a thousand pictures.
+
+
+////
+The is the documentation shell document.
+It is only used to format and order the generated content from the Swagger2Markup utility.
+
+Additional static content can be added to this shell.
+////
+
+<<<<
+////
+    Basic Design Considerations
+////
+include::basicDesign.adoc[Basic Design]
+
+<<<<
+////
+    Screen Shots
+////
+include::screenShots.adoc[Screen Shots]
+
+<<<<
+////
+    Database Infromation
+////
+include::databaseInfo.adoc[Database INformation]
+
+
+<<<<
+////
+    Overview
+////
+include::overview.adoc[Overview from Swagger]
+
+<<<<
+////
+    Security
+////
+include::security.adoc[Security from swagger]
+
+<<<<
+////
+    Security Contract
+////
+include::securityContract.adoc[Security Contract]
+
+<<<<
+////
+    Paths (Endpoints)    
+////
+include::paths.adoc[Paths from Swagger]
+
+<<<<
+////
+    Definitions
+////
+include::definitions.adoc[Definitions from Swagger]
+
+
+<<<<
+////
+    API History
+////
+include:apiHistory.adoc[API History]
+
+<<<<
+////
+    Document History
+////
+include::documentHistory.adoc[Document History]
+

@@ -1,0 +1,27 @@
+
+[[_securityscheme]]
+== Security
+
+[[_basicauth]]
+=== basicAuth
+==== Security Contract
+
+planID, planType, planLocation, and planSystem are the header elements used
+during connection validation. 
+
+The validation comprises two steps – validation
+that the organization has an authorized care relationship with the passed
+beneficiary, and validation that the qualified-organization is currently
+authorized to use the service at all.
+
+`planID` + `planType` uniquely identifies an organization and can used to
+provide an index into the CC360 universe table to validate organization acces.
+
+‘planID + planType + planLocation + planSystem’ uniquely identifies an entry
+in the system-access authorization table.
+
+[%hardbreaks]
+__Type__ : basic
+
+
+

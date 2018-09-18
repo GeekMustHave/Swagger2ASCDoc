@@ -1,0 +1,15 @@
+Page,Tab,Tile,Description,Sprint ID
+
+Plans,none,none,List of all the plans and APIDUA setting,001
+Care Coordination,Client-Summary,None,Summary (Top 3) of 11 tiles,001
+Care Coordination,Client-Summary,Pharmacy drill down,Pharmacy details,002
+Care Coordination,Client-Summary,ED Visits drill down,ED Visit details,002
+Care Coordination,Client-Summary,IP Admissions drill down,IP Admissions details,002
+Care Coordination,Client-Summary,Recent Providers drill down,Providers list details,003
+Care Coordination,Client-Summary,Chronic Conditions drill down,Chronic conditions details,003
+Care Coordination,Client-Summary,Procedure codes drill down,Procedure codes drill down,003
+Care Coordination,Client-Profile,None,List of 14 categories with yes/no,004
+Care Coordination,Client-Profile,Home Help drill down,Home help category details,005
+Care Coordination,Integrated Care Plan,"Plans, Managers and professionals","List of Plans, managers and professionals",006
+Care Coordination,Integrated Care Plan,"Goals, Tasks and Notes","List of the Goals, Tasks and Notes for a plan",006
+Care Coordination,Beneficiary Header,More,"Beneficiary demographics, benefit plans, PCP",007

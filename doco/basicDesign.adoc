@@ -1,0 +1,32 @@
+////
+Basic design considerations
+////
+:imagesdir: ./images
+:pagenums:
+:experimental:
+:source-hightlighter: pygments
+:icons: font
+
+
+
+[[_basic_design_consdierations]]
+== Basic design considerations
+
+Some of the basic design considerations for this API are defined in this document.
+
+* Reuse existing database objects currently in use by the CareConnect360 web application.
+* This API will initially be written for read or retrieval access to the CC360 data sources.
+* This API will be hosted on the same platform as the CC360 web application.
+* In the future when the State of Michigan migrates to the Enterprise Service Bus (ESB)
+this API must be able to migrate to that environment.
+* Security contract will be developed in coordination with the Michigan Department of Community Health (MDHHS) security group. 
+
+== Architecture Diagram
+
+The following block diagram displays the MDHHS, MiHIN, PCE and the health plan with the basic data flows defined. 
+
+.Data Flow Diagram
+image::cc360-api-2018.png[Data Flow Diagram, align='center']
+ 
+
+ 

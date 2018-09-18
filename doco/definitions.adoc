@@ -1,0 +1,555 @@
+
+[[_definitions]]
+== Definitions
+
+[[_clientsummarytilesmodel]]
+=== ClientSummaryTilesModel
+*NOTE* This model describes a single object.
+There are 11 areas (Tiles) of summaries that make up this model.
+All 11 tiles are returned in a single object.
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**Antipsychotics** +
+__optional__|List of the top 3 Antipsychotics.|< <<_clientsummarytilesmodel_antipsychotics,ClientSummaryTilesModel_Antipsychotics>> > array
+|**BHIPAdmissions** +
+__optional__|List of the most recent 3 BH Inpatient admissions|< <<_clientsummarytilesmodel_bhipadmissions,ClientSummaryTilesModel_BHIPAdmissions>> > array
+|**ChronicConditions** +
+__optional__|These are the Top 3 Chronic conditions out of the total # for a Beneficiery.|< <<_clientsummarytilesmodel_chronicconditions,ClientSummaryTilesModel_ChronicConditions>> > array
+|**Dental** +
+__optional__|List of the most recent 3 dental visits.|< <<_clientsummarytilesmodel_dental,ClientSummaryTilesModel_Dental>> > array
+|**EDVisits** +
+__optional__|These are most recent 3 visits.|< <<_clientsummarytilesmodel_edvisits,ClientSummaryTilesModel_EDVisits>> > array
+|**ERDental** +
+__optional__|List of the most recent 3 ED dental visits|< <<_clientsummarytilesmodel_dental,ClientSummaryTilesModel_Dental>> > array
+|**IPAdmissions** +
+__optional__|List of the last 3 admissions.|< <<_clientsummarytilesmodel_ipadmissions,ClientSummaryTilesModel_IPAdmissions>> > array
+|**Pharmacy** +
+__optional__|These are top 3 pharmacy fills|< <<_clientsummarytilesmodel_pharmacy,ClientSummaryTilesModel_Pharmacy>> > array
+|**ProcedureCodes** +
+__optional__|List of the top 3 codes.|< <<_clientsummarytilesmodel_procedurecodes,ClientSummaryTilesModel_ProcedureCodes>> > array
+|**Psychotropics** +
+__optional__|List of the top 3 psychrotropicss.|< <<_clientsummarytilesmodel_psychotropics,ClientSummaryTilesModel_Psychotropics>> > array
+|**RecentProviders** +
+__optional__|List of the most recent 3 providers|< <<_clientsummarytilesmodel_recentproviders,ClientSummaryTilesModel_RecentProviders>> > array
+|===
+
+
+[[_clientsummarytilesmodel_antipsychotics]]
+=== ClientSummaryTilesModel_Antipsychotics
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**GenericDrugName** +
+__optional__|**Example** : `"BREXPIPRAZOLE"`|string
+|**MostRecentFill** +
+__optional__|**Example** : `"2017-06-30T00:00:00.000+0000"`|string
+|**NumberOfFills** +
+__optional__|**Example** : `2`|integer (int32)
+|===
+
+
+[[_clientsummarytilesmodel_bhipadmissions]]
+=== ClientSummaryTilesModel_BHIPAdmissions
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**AdminDate** +
+__optional__|**Example** : `"2017-05-05T00:00:00.000+0000"`|string
+|**FacilityName** +
+__optional__|**Example** : `"1144381245 -  HARBOR OAKS HOSPITAL "`|string
+|**TILE_IND** +
+__optional__|Indicates the risk status for this tile
+* Blank - Unknown
+* L - Low
+* M - Medium
+* H - High +
+**Example** : `"H    "`|string
+|===
+
+
+[[_clientsummarytilesmodel_chronicconditions]]
+=== ClientSummaryTilesModel_ChronicConditions
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**Condition** +
+__optional__|**Example** : `"DIABETES"`|string
+|**CurrentCount** +
+__optional__|**Example** : `14`|integer (int32)
+|**TILE_IND** +
+__optional__|Indicates the risk status for this tile
+* Blank - Unknown
+* L - Low
+* M - Medium
+* H - High +
+**Example** : `"H    "`|string
+|===
+
+
+[[_clientsummarytilesmodel_dental]]
+=== ClientSummaryTilesModel_Dental
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**Provider** +
+__optional__|**Example** : `"Hoover Family Dental "`|string
+|**TILE_IND** +
+__optional__|Indicates the risk status for this tile
+* Blank - Unknown
+* L - Low
+* M - Medium
+* H - High +
+**Example** : `"L    "`|string
+|**VisitDate** +
+__optional__|**Example** : `"02/22/2016"`|string
+|===
+
+
+[[_clientsummarytilesmodel_edvisits]]
+=== ClientSummaryTilesModel_EDVisits
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**Facility** +
+__optional__|The name of the Facility preceded by its 10 digit NPI. +
+**Example** : `"1134144801 -  HENRY FORD HOSPITAL "`|string
+|**TILE_IND** +
+__optional__|Indicates the risk status for this tile
+* Blank - Unknown
+* L - Low
+* M - Medium
+* H - High +
+**Example** : `"L    "`|string
+|**VisitDate** +
+__optional__|Emergency Department Visit Date +
+**Example** : `"12/27/2016"`|string
+|===
+
+
+[[_clientsummarytilesmodel_ipadmissions]]
+=== ClientSummaryTilesModel_IPAdmissions
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**AdmitDate** +
+__optional__|**Example** : `"2016/02/16"`|string
+|**FacilityName** +
+__optional__|The name of the Facility preceded by its 10 digit NPI. +
+**Example** : `"1952307852 -  MUNSON MEDICAL CENTER "`|string
+|**TILE_IND** +
+__optional__|Indicates the risk status for this tile
+* Blank - Unknown
+* L - Low
+* M - Medium
+* H - High +
+**Example** : `"L    "`|string
+|===
+
+
+[[_clientsummarytilesmodel_pharmacy]]
+=== ClientSummaryTilesModel_Pharmacy
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**GenericDrugName** +
+__optional__|**Example** : `"ALPRAZOLAM"`|string
+|**Most Recent Fill** +
+__optional__|This is timestamp field. The time is always midnight.
+The date portion is separated from the time portion by a single space.
+
+Date Format - zm/zd/yyyy months and days dont have leading zeros. +
+**Example** : `"3/14/2017 12:00:00 AM"`|string
+|**Number of Fills** +
+__optional__|The number of fills for the given DrugName. +
+**Example** : `14`|integer (int32)
+|===
+
+
+[[_clientsummarytilesmodel_procedurecodes]]
+=== ClientSummaryTilesModel_ProcedureCodes
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**Current Count** +
+__optional__|**Example** : `3`|integer (int32)
+|**Procedure Code** +
+__optional__|**Example** : `"99213 -  Office/outpatient visit est"`|string
+|===
+
+
+[[_clientsummarytilesmodel_psychotropics]]
+=== ClientSummaryTilesModel_Psychotropics
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**GenericDrugName** +
+__optional__|This is the cool name for the drug. +
+**Example** : `"DIVALPROEX SODIUM"`|string
+|**MostRecentFill** +
+__optional__|hhhhh +
+**Example** : `"2016-09-19T00:00:00.000+0000"`|string
+|**NumberOfFills** +
+__optional__|**Example** : `3`|integer (int32)
+|===
+
+
+[[_clientsummarytilesmodel_recentproviders]]
+=== ClientSummaryTilesModel_RecentProviders
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**MostRecentVisit** +
+__optional__|**Example** : `"2017-05-08T00:00:00.000+0000"`|string
+|**ProviderID** +
+__optional__|**Example** : `"1952791105"`|string
+|**ProviderName** +
+__optional__|**Example** : `"BEST URGENT CARE PC"`|string
+|**TotalVisits** +
+__optional__|**Example** : `3`|integer (int32)
+|===
+
+
+[[_helloworldmodel]]
+=== HelloWorldModel
+This is a confidence response to show that the link connection to the API server is working
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**BuildEdition** +
+__optional__|The Build Edition is used to keep track of which packages
+are being published on each of the servers. 
+
+Using the example above-
+
+* Major release (ie- 17.9)
+* Build version (ie- 6464)
+* Package ID (ie- 27407) +
+**Example** : `"17.9.6464.27407"`|string
+|**Message** +
+__optional__|**Example** : `"Hello World."`|string
+|**ServerTime** +
+__optional__|This is the State of Michigan Application servers time stamp. +
+**Example** : `"9/18/2017 4:04:14 PM"`|string
+|===
+
+
+[[_planmodel]]
+=== PlanModel
+The object is the plans and the status of the Data User Agreements (DUA).
+The APIDUA indicates if this plan has been granted access to the CC360-API.
+
+__Type__ : < <<_planmodel_inner,PlanModel_inner>> > array
+
+
+[[_planmodel_inner]]
+=== PlanModel_inner
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**APIDUA** +
+__optional__|Indicates that this Plan ID/Type/EHRSystem/Location
+has a valid data user agreement for using the CC360 API. +
+**Example** : `"Active"`|enum (Active, Inactive)
+|**EHRSystem** +
+__optional__|Type type of Electronic Health Records system that the consumer
+is proxy for this request
+
+Default is *Any* +
+**Maximal length** : `30` +
+**Example** : `"PCE"`|string
+|**ExtractDUA** +
+__optional__|Indicates that this Plan ID/Type/EHRSystem/Location
+has a valid Data Usaer Agreement for extracting data
+from the CC360 web application. +
+**Example** : `"Active"`|enum (Active, Inactive)
+|**Location** +
+__optional__|The location of the plan that the consumer is proxy for this request.
+It is a simple text field to identify location
+(ie Lansing, Grand Rapids, Traverse City
+
+Default is *Any* +
+**Maximal length** : `30` +
+**Example** : `"Grand Rapids"`|string
+|**PlanID** +
+__optional__|This is the code used to help identify a specific plan +
+**Maximal length** : `50` +
+**Example** : `"13"`|string
+|**PlanName** +
+__optional__|**Maximal length** : `500` +
+**Example** : `"Macomb Co CMH services"`|string
+|**PlanType** +
+__optional__|Indicates which type of provider for the plan. PIHP, MHP, ICO, etc' +
+**Maximal length** : `10` +
+**Example** : `"PIHP"`|enum (CGHAP, ICO, LCW, LHD, MHP, PIHP)
+|**WebDUA** +
+__optional__|Indicates that thisd Plan ID/TYpe/EHRSystem/Location
+has a valid data user agreement for using the CC360 web application. +
+**Example** : `"Active"`|enum (Active, Inactive)
+|===
+
+
+[[_status400]]
+=== Status400
+Bad request. Request was received that could not be understood by the server. This could be cause by any of the issues below.
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**INVALID_BENEFICARY** +
+__optional__|**Example** : `"The beneficary ID if supplied was not formatted correctly.Beneficiary ID is 10 digits, zero filled"`|string
+|**INVALID_CASE** +
+__optional__|**Example** : `"The case ID if supplied was not formatted correctly.Case ID is a integer number, np decimal point or commas."`|string
+|**INVALID_GOAL** +
+__optional__|**Example** : `"The Goal ID if supplied was not formatted correctly.  Goal ID is a integer number, no decimal point or commas.  "`|string
+|**MISSING_PLAN** +
+__optional__|**Example** : `"Header value is missing.  planID has to be passed with a non empty value"`|string
+|**MISSING_TYPE** +
+__optional__|**Example** : `"Header value is missing.  planYpe has to be passed with a non empty value"`|string
+|===
+
+
+[[_status404]]
+=== Status404
+Not Found . the server could not find what was requested
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**Message** +
+__optional__|**Example** : `"Beneficiary is not found."`|string
+|===
+
+
+[[_summarychronicconditiontilemodel]]
+=== SummaryChronicConditionTileModel
+*NOTE* This model describes a single object in an array of zero to many objects.
+List of the Chronic conditions with tile drill down details
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**13-18 Months** +
+__optional__|Number of occurrences for this Condition in 13-18 Months +
+**Example** : `"        109"`|string
+|**7-12 Months** +
+__optional__|Number of occurrences for this Condition in 7-12 Months +
+**Example** : `"         37"`|string
+|**BeneficiaryID** +
+__optional__|Medicaid identifier for this beneficiery +
+**Example** : `"9999999903"`|string
+|**Conditions** +
+__optional__|Name of the Chronic Condition(s) +
+**Example** : `"DIABETES"`|string
+|**Last 6 Months** +
+__optional__|Number of occurrences for this Condition in 6 Months +
+**Example** : `"         14"`|string
+|===
+
+
+[[_summaryedvisitsdrilldownmodel]]
+=== SummaryEDVisitsDrillDownModel
+This is a list of Emergency Room visits for the selected beneficiary.
+
+__Type__ : < <<_summaryedvisitsdrilldownmodel_inner,SummaryEDVisitsDrillDownModel_inner>> > array
+
+
+[[_summaryedvisitsdrilldownmodel_inner]]
+=== SummaryEDVisitsDrillDownModel_inner
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**AdmittingReason** +
+__optional__|??.|string
+|**BeneficiaryID** +
+__optional__|Medicaid identifier for this beneficiary +
+**Example** : `"9999999903"`|string
+|**DateOfService** +
+__optional__|Date the emergency department visit occured. +
+**Example** : `"2/25/2017 12:00:00 AM"`|string
+|**Facility** +
+__optional__|The name of the facility where the in patient admission occured. +
+**Example** : `"1023088168 -  ST JOHN HOSPITAL AND MEDICAL CENTER "`|string
+|**PrimaryDiagnosis** +
+__optional__|Primary diagnosos code. Includes the ICD-10 code and the description. +
+**Example** : `"IM7989 - Other specified soft tissue disorders"`|string
+|**SecondaryDiagnosis** +
+__optional__|Secondary diagnosos code. Includes the ICD-10 code and the description. +
+**Example** : `"R600 - Localized edema"`|string
+|**TCN** +
+__optional__|Transaction Control Number, uniquely identifies transaction in CHAMPS +
+**Example** : `"9988776655443327777"`|string
+|===
+
+
+[[_summaryipadmissionsdrilldownmodel]]
+=== SummaryIPAdmissionsDrillDownModel
+This is a list of inpatient admissions for the selected beneficiary.
+
+__Type__ : < <<_summaryipadmissionsdrilldownmodel_inner,SummaryIPAdmissionsDrillDownModel_inner>> > array
+
+
+[[_summaryipadmissionsdrilldownmodel_inner]]
+=== SummaryIPAdmissionsDrillDownModel_inner
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**AdmitDate** +
+__optional__|Date the beneficiary was admitted to the facility. +
+**Example** : `"2017-04-30T00:00:00.000+0000"`|string
+|**BeneficiaryID** +
+__optional__|Medicaid identifier for this beneficiary +
+**Example** : `"9999999903"`|string
+|**DischargeDate** +
+__optional__|Date the beneficiary was discharfed from the facility. +
+**Example** : `"2017-05-01T00:00:00.000+0000"`|string
+|**FacilityName** +
+__optional__|The name of the facility where the in patient admission occured. +
+**Example** : `"2234455666 - St Marys Cental Hospital"`|string
+|**HospitalType** +
+__optional__|Type of facility.|string
+|**LengthOfStay** +
+__optional__|The number of days the Inpatient admission was for. +
+**Example** : `2`|integer (int32)
+|**PrimaryDX** +
+__optional__|Primary diagnosos code. Includes the ICD-10 code and the description. +
+**Example** : `"I639 -  CEREBRAL INFARCTION UNSPECIFIED"`|string
+|**TCN** +
+__optional__|Transaction Control Number, uniquely identifies transaction in CHAMPS +
+**Example** : `"9988776655443327777"`|string
+|===
+
+
+[[_summarypharmacydrilldownmodel]]
+=== SummaryPharmacyDrillDownModel
+Pharmacy details for a specific beneficiary.
+
+__Type__ : < <<_summarypharmacydrilldownmodel_inner,SummaryPharmacyDrillDownModel_inner>> > array
+
+
+[[_summarypharmacydrilldownmodel_inner]]
+=== SummaryPharmacyDrillDownModel_inner
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**BeneficiaryID** +
+__optional__|Medicaid identifier for this beneficiary +
+**Example** : `"9999999903"`|string
+|**BrandName** +
+__optional__|The brand name of the drug, +
+**Example** : `"WARFARIN SODIUM"`|string
+|**DailyDose** +
+__optional__|Dosage of medication per day. +
+**Example** : `"1.00"`|string
+|**DaysSupply** +
+__optional__|How many days this script is expected to last. +
+**Example** : `30`|integer (int32)
+|**DoseStrength** +
+__optional__|Provides a description of drug potency in units. +
+**Example** : `"1.000"`|string
+|**DoseUnits** +
+__optional__|Use in conjunction with drug strength number, volumne number and
+volumne units to obtain a conventional strength expression for the drug product. +
+**Length** : `10` +
+**Example** : `"MG"`|string
+|**Filldate** +
+__optional__|Date that the prescription was filled. +
+**Example** : `"2017-08-04T00:00:00.000+0000"`|string
+|**GenericName** +
+__optional__|The generic name of the drug. +
+**Example** : `"WARFARIN SODIUM"`|string
+|**PrescribingProvider** +
+__optional__|Name of the doctor or provider who wrote the script. +
+**Example** : `"JIRA G COUMARBATCH "`|string
+|**QuantityDispensed** +
+__optional__|Number of pills dispensed expressed in metric decimal units. +
+**Example** : `"30.00"`|string
+|**TotalDailyDose** +
+__optional__|The daily dosage multiplied by the strength.
+The first portion of this field is the units in decimal with 3 units of precision.
+There is a separator (space)(hypen)(space)
+Then the measurement of weight. +
+**Length** : `25` +
+**Example** : `"1.000 - MG"`|string
+|===
+
+
+[[_summaryprocedurecodestilemodel]]
+=== SummaryProcedureCodesTileModel
+*NOTE* This model describes a single object in an array of zero to many objects.
+List of the all of the procedure calls with tile drill down details
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**BeneficiaryID** +
+__optional__|Medicaid identifier for this beneficiery +
+**Example** : `"9999999903"`|string
+|**CurrentCount** +
+__optional__|Number of times for a given ProcedureCode used in a given period of time +
+**Example** : `6.0`|number (int32)
+|**EarliestDate** +
+__optional__|Earliest date of the Procedure Code in a given period of time +
+**Example** : `"2/8/2016 12:00:00 AM"`|string
+|**LatestDate** +
+__optional__|Most recent date of the Procedure Code in a given period of time +
+**Example** : `"2/8/2017 12:00:00 AM"`|string
+|**ProcedureCode** +
+__optional__|Sub-type of Medical Classification used to identify specific surgical, medical or diagnostic interventions +
+**Example** : `"99336 -  Domicil/r-home visit est pat"`|string
+|===
+
+
+[[_summaryrecentproviderstilemodel]]
+=== SummaryRecentProvidersTileModel
+*NOTE* This model describes a single object in an array of zero to many objects.
+List of the all of the recent providers with tile drill down details
+
+
+[options="header", cols=".^3a,.^11a,.^4a"]
+|===
+|Name|Description|Schema
+|**BeneficiaryID** +
+__optional__|Medicaid identifier for this beneficiery +
+**Example** : `"9999999903"`|string
+|**DateOfService** +
+__optional__|Date of Service received by the Beneficiery +
+**Example** : `"2/18/2017 12:00:00 AM"`|string
+|**PrimaryDx** +
+__optional__|Primary diagnosis made at the time of Service +
+**Example** : `"M79621 - PAIN IN RIGHT UPPER ARM"`|string
+|**ProviderID** +
+__optional__|NPI-National Provider Identifier of the Provider +
+**Example** : `"1528031226"`|string
+|**SecondaryDx** +
+__optional__|Secondary diagnosis made at the time of Service +
+**Example** : `" - PAIN IN RIGHT UPPER ARM"`|string
+|**TCN** +
+__optional__|Transaction Control Number of a Claim +
+**Example** : `"99999999999999000"`|string
+|===
+
+
+

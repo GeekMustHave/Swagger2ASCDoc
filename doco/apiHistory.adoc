@@ -1,0 +1,62 @@
+////
+This is the history of the updates to the API.
+This is different than the document history.
+////
+
+
+== API Update History
+
+The CC360-API deployment History.
+
+[cols="1,1,1,6",options="header"]
+|===
+| Date       | Version   |  Editor  |  Description
+| 08/10/2018 | 0.90.5    | JHRS | Documentation review and integration only
+| 10/08/2017 | 0.90.3    | JHRS | Last three endpoints for Phase 1 of CC360 added
+| 09/18/2017 | 0.90.2    | JHRS  | Updated HelloWorld to indicate new format (JSON)
+| 09/15/2017 | 0.90.2    | JHRS | Corrected Conditions (two s's) to Condition
+| 09/12/2017 | 0.90.2    | JHRS | Clarified the (planID) it is a two digit file 01,23,45
+| 08/25/2017 | 0.90.2   | JHRS     | Eliminated all API endpoints not in QA or production
+| 08/21/2017 | 0.90.1   | JHRS |   Additional updates to be ASCIIDoc compliant
+| 08/18/2017 | 0.90.0      | JHRS      | Updated the description on sprint # 1 calls
+| 08/08/2017 | 0.85.6    |   JHRS   |  Updated tech description with proper formatting for
+                                        Swagger2ASCIIDoc generation
+| 08/01/2017 | 0.85.6    |   JHRS   |   Moved this history from Swagger into this document
+                                        Moved data source information from Swagger into this document
+                                        Added Summary-Pharmacy Tile (Drill down details)
+| 07/28/2017  | 0.98.5   |   JHRS   |   Updated Model sample set for actual data sample Redefined models 
+                                        as an single object in an array
+| 07/27/2017  | 0.98     |   JHRS   |   Update plan endpoint, no parms required
+| 07/26/2017 | 0.97      |   JHRS   |   Added Jeff's parameter description,        
+                                        Began standardizing status message with RFC7231
+| 07/24/2017  |0.96      |  JHRS    |   Changed security contract to trust-verify,   
+                                         Means all requests are verified against DW ACRS,   
+                                         Updated risk status descriptions        
+| 07/20/2017  |0.95       | JHRS    |  Updated the client summary with missing panels
+                                        Moved "Support" models to Full API definition
+                                        Added 2 Summary Tile Details endpoints  
+| 07/19/2017  | 0.94       |JHRS    |  Added Client Summary tab information.
+                                        Changed Beneficiary & ICP Tab's to future07/28/2017                                 
+                                        Added response example linked to pwc-lms
+| 07/17/2017   |0.93      | JHRS    | Add Client-Profile tab information
+| 07/14/2017  |0.92       | JHRS    |  Added userID to header parms, cleaned up 
+                                        multi line descriptions, consumer
+| 07/12/2017   |0.90      | JHRS    |  Updated status of spec to DRAFT, open
+                                        for distribution.
+| 07/10/2017  | 0.87      | JHRS     | Added the ACRVerified flag to 
+                                         some of the endpoints
+| 07/06/2017  | 0.86     |  JHRS   |   Began adding gloabal parms including headers
+| 07/03/2017  | 0.84     |  JHRS   |   Updated GTN with actual examples, hierarchy diagram
+| 06/30/2017  | 0.82     |  JHRS    |  Added the Goal/Task/Note endpoints
+| 06/23/2017  | 0.8      |  JHRS     | Added description details to the definitions ref's
+| 06/12/2017  | 0.79     |  JHRS    |  rework into OAS specification standards, 
+                                        ESB, DTMB, CyberSecurity, SOM     
+| 06/02/2017   |0.78       | AP    |   Added details for the dotnet and unit testing stubs
+| 05/23/2017   |0.75      | AP      | Added some o0f the basic paths for the endpoints
+| 05/26/2017  | 0.7      | AP      |  Added all converted base paths
+| 05/12/2017  | 0.6       | JHRS    |  Changed path names to use OAS standards
+| 05/07/2017  | 0.4       | JHRS    |  Updated for new API interface definition 
+                                        from MDHHS DTMB
+| 04/12/2017  | 0.2       | JHRS    |  Initial version of API drafted using 
+                                        objects from data store
+|===

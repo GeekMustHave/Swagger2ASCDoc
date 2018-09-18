@@ -1,0 +1,67 @@
+//= CC360 API Version 0.90.5
+
+
+[[_overview]]
+== Overview
+=== `Optum Government Systems`
+
+The API is designed for use by Optum web applications including
+CareConnect 360 and the CareConnect API.
+
+==== Protected Health Information Warning
+
+The _(request)_ and _(response)_ of the QA and Production servers *WILL* contain
+*Protected Health Information (PHI)*.
+
+The _(request)_ and _(response)_ of the Mock server will *NOT* contain
+*Protected Health Information (PHI)*. 
+
+==== Usage
+
+Use of this API is resitricted and limited
+by State of Michigan Department of Human and Health Services *(MDHHS)*
+and by United Health Care *(UHC)* security policies.'
+
+==== TEST Edition
+
+This version of the API specification is considered a *TEST* and subject to
+change with notice.
+
+
+=== Version information
+[%hardbreaks]
+__Version__ : v1
+
+
+=== Contact information
+[%hardbreaks]
+__Contact__ : MDHHS - State Of Michigan.
+__Contact Email__ : helpdesk@michigan.gov
+
+
+=== License information
+[%hardbreaks]
+__License__ : Restricted usage as detemined by MDHHS
+__License URL__ : https://data.michigan.gov/
+__Terms of service__ : None
+
+
+=== URI scheme
+[%hardbreaks]
+__Host__ : cc360-pwc.mockable.io
+__BasePath__ : /api/v1
+__Schemes__ : HTTPS
+
+
+=== Consumes
+
+* `application/json`
+
+
+=== Produces
+
+* `application/json`
+* `application/html`
+
+
+

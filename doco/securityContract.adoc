@@ -1,0 +1,60 @@
+////
+This outline the details of the security contract
+////
+
+
+:imagesdir: ./images
+:pagenums:
+:experimental:
+:source-hightlighter: pygments
+:icons: font
+
+[[_securityContract-detail]]
+== Security contract (detail)
+
+The security contract defines how authentication and process flow for the API is defined.
+
+=== Authentication
+
+All of the users of the CC360-API will be located behind the State of Michigan Firewall.  
+No outside connection (Citizen) access to CC360-API is allowed.
+
+The State of Michigan is responsible for creating firewall rules to connect CC360-API consumers to the CC360-API server.
+
+All CC360-API communications will be performed over secure HTTP (HTTPS).
+
+=== Authorization
+
+Every CC360-API request will require header parameters to identify the plan/agency that the request is being brokered for.
+
+The beneficiary identified is included as a parameter within the path of the API call.
+
+The consumer is responsible for verifying if an active care relationship (ACRS) exist.  
+The consumer will set a header parameter (validACRS) to indicate they have verified the ACRS relationship.
+
+==== Full-Trust Model
+
+Requests to CC360-API with the validARCS flag set to **True** will be trusted and a response returned.
+
+Requests to CC360-API with the validACRS flag set to **False** will have the plan/agency - Beneficiary relationship verified
+using data from the MDHHS Teradata data warehouse.  Those requests which do **not** have a relationship will be denied.
+
+.CC360-API Security Contract process (Full-Trust Model)
+image::CC360-API_V21c_170721.svg[Security Process (Full-Trust), align='center']
+
+
+NOTE: BPMN diagram created with http://demo.bpmn.io/[ BPMN Demo On-Line].  BPMN model file for the "Full Trust"
+process can be viewed/downloaded link:./documents/CC360-API_V21c.bpmn[ from this link]
+
+
+==== Trust-but-Verify Model
+
+**All requests** to CC360-API will have the plan/agency - Beneficiary relationship verified
+using data from the MDHHS Teradata data warehouse.  Those requests which do **not** have a relationship will be denied.
+
+
+.CC360-API Security Contract process (Trust-but-Verify Model)
+image::CC360-API_V21d_170727.svg[Security Process (Trust-but-Verify), align='center'] 
+
+NOTE: BPMN diagram created with http://demo.bpmn.io/[ BPMN Demo On-Line].  BPMN model file for the "Trust But Verify"
+process can be viewed/downloaded link:./documents/CC360-API_V21d.bpmn[ from this link]

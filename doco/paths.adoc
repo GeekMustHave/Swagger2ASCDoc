@@ -1,0 +1,1318 @@
+
+[[_paths]]
+== Paths
+
+[[_helloworld]]
+=== HelloWorld
+....
+GET /HelloWorld
+....
+
+
+==== Description
+This endpoint is used just for verifying that the API connection is working.
+
+It displays the server timestamp.
+
+It display the Build Edition to verify the correct version is being used.
+
+It does not require any access to any of the datasources.
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_helloworldmodel,HelloWorldModel>>
+|===
+
+
+==== Tags
+
+* Test-Connection
+
+
+==== Example HTTP response
+
+===== Response 200
+[source,json]
+----
+{
+  "Message" : "Hello World.",
+  "BuildEdition" : "17.9.6464.27407",
+  "ServerTime" : "9/18/2017 4:04:14 PM"
+}
+----
+
+
+[[_beneficiarysummary]]
+=== beneficiaries/{beneID}/summary
+....
+GET /beneficiaries/{beneID}/summary
+....
+
+
+==== Description
+
+
+Get the "Top 3 list" for each of 11 focus areas (tiles)
+
+* Chronic Conditions
+* Pharmacy
+* E/D Visits
+* I/P Admissions
+* Procedure Codes
+* Psychrotropics
+* Antipsychotics
+* Dental
+* ED Dental Visits
+* Recent Providers
+* BH I/P Admissions
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^9a,.^4a"]
+|===
+|Type|Name|Description|Schema
+|**Header**|**EHRSystem** +
+__required__|==== Description
+
+EHRSystem allows MDHHs to authorize one EHR to make requests while not
+authorizing another. The service must supply one of the names recorded in the
+web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *Any*.|string
+|**Header**|**planID** +
+__required__|==== Description
+
+planID and planType combine to uniquely identify organizations within CC360.
+They will be retrievable from CC360 via another service. 
+
+Consumer will use this service to populate their map mechanism so that
+incoming requests can be translated into the correct CC360 oganization details
+
+==== Mock server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *01*.|string
+|**Header**|**planLocation** +
+__required__|==== Description
+
+planLocation is provided to allow MDHHs to authorize logical or
+geographicalsubsets of an organization, for example- Grand Rapids or Diabetes Support Team.
+
+If the DUA with MDHHS does not identify any authorized subsets,
+the parameter will be set to 'ANY'.
+If it has any authorized subsets, the consumer must supply
+one of those names and cannot use 'ANY'
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *Any*.|string
+|**Header**|**planType** +
+__required__|==== Description
+
+planID and planType combine to uniquely identify organizations within CC360.
+they will be retrievable from CC360 via another service. 
+
+Consumer will use this service to populate their map mechanism
+so that incoming requests can be translated into the correct CC360
+organization details.
+
+Plan types are strings (ie PIHP, MHP, ICO, ….)
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *CMH*.|string
+|**Header**|**userID** +
+__required__|==== Description
+
+The name of the user from the Plan causing the API to be
+requested by the consumer
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using one user ID for all your tests.|string
+|**Header**|**validateACRS** +
+__required__|==== Description
+
+Consumer will be reviewing their own records to attempt to establish a
+currentcare-relationship between the organization and the beneficiary. 
+
+If it cannot (validAcrs = *False*), it will forward the request,
+and a CC360 service will in turn attempt to find a relationship in its
+authorization tables, and act according to that result.
+
+If MiHIN can validate the relationship (validAcrs = *True*)
+the behaviour of CC360 service will vary between an initial
+‘tuning’ phase and long-term production. 
+
+In the tuning phase, a CC360 service will always consult its own
+authorization tables and will act according to that value. 
+
+On a daily basis, a reconciliation report will be generated to compare
+Consumer and CC360 results, and MDHHS staff will work with Consumer to
+understand and correct any variations. Once the variations drop below a
+defined threshold (t.b.d), CC360 services will switch to always
+respecting any ACRS delivered True assertion.
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *True*.|enum (true, false)
+|**Path**|**beneID** +
+__required__|==== Description
+
+10 digit Bemeficiary Id, zero filled
+
+==== Mock Server
+
+The only Bedneficiary ID's available on the Mock server are 
+
+* *9999999006*
+* *9999999957*
+ *
+
+These beneficiary ID's do not exist in either the QA ir Production servers.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_clientsummarytilesmodel,ClientSummaryTilesModel>>
+|===
+
+
+==== Tags
+
+* Summary
+
+
+==== Example HTTP response
+
+===== Response 200
+[source,json]
+----
+{
+  "EDVisits" : [ {
+    "Facility" : "1134144801 -  HENRY FORD HOSPITAL ",
+    "VisitDate" : "12/27/2016",
+    "TILE_IND" : "L    "
+  }, {
+    "Facility" : "1134144801 -  HENRY FORD HOSPITAL ",
+    "VisitDate" : "12/27/2016",
+    "TILE_IND" : "L    "
+  } ],
+  "ProcedureCodes" : [ {
+    "Current Count" : 3,
+    "Procedure Code" : "99213 -  Office/outpatient visit est"
+  }, {
+    "Current Count" : 3,
+    "Procedure Code" : "99213 -  Office/outpatient visit est"
+  } ],
+  "Antipsychotics" : [ {
+    "NumberOfFills" : 2,
+    "GenericDrugName" : "BREXPIPRAZOLE",
+    "MostRecentFill" : "2017-06-30T00:00:00.000+0000"
+  }, {
+    "NumberOfFills" : 2,
+    "GenericDrugName" : "BREXPIPRAZOLE",
+    "MostRecentFill" : "2017-06-30T00:00:00.000+0000"
+  } ],
+  "RecentProviders" : [ {
+    "ProviderID" : "1952791105",
+    "ProviderName" : "BEST URGENT CARE PC",
+    "MostRecentVisit" : "2017-05-08T00:00:00.000+0000",
+    "TotalVisits" : 3
+  }, {
+    "ProviderID" : "1952791105",
+    "ProviderName" : "BEST URGENT CARE PC",
+    "MostRecentVisit" : "2017-05-08T00:00:00.000+0000",
+    "TotalVisits" : 3
+  } ],
+  "IPAdmissions" : [ {
+    "TILE_IND" : "L    ",
+    "FacilityName" : "1952307852 -  MUNSON MEDICAL CENTER ",
+    "AdmitDate" : "2016/02/16"
+  }, {
+    "TILE_IND" : "L    ",
+    "FacilityName" : "1952307852 -  MUNSON MEDICAL CENTER ",
+    "AdmitDate" : "2016/02/16"
+  } ],
+  "ERDental" : [ {
+    "VisitDate" : "02/22/2016",
+    "TILE_IND" : "L    ",
+    "Provider" : "Hoover Family Dental "
+  }, {
+    "VisitDate" : "02/22/2016",
+    "TILE_IND" : "L    ",
+    "Provider" : "Hoover Family Dental "
+  } ],
+  "Pharmacy" : [ {
+    "Number of Fills" : 14,
+    "GenericDrugName" : "ALPRAZOLAM",
+    "Most Recent Fill" : "3/14/2017 12:00:00 AM"
+  }, {
+    "Number of Fills" : 14,
+    "GenericDrugName" : "ALPRAZOLAM",
+    "Most Recent Fill" : "3/14/2017 12:00:00 AM"
+  } ],
+  "ChronicConditions" : [ {
+    "Condition" : "DIABETES",
+    "CurrentCount" : 14,
+    "TILE_IND" : "H    "
+  }, {
+    "Condition" : "DIABETES",
+    "CurrentCount" : 14,
+    "TILE_IND" : "H    "
+  } ],
+  "Psychotropics" : [ {
+    "NumberOfFills" : 3,
+    "GenericDrugName" : "DIVALPROEX SODIUM",
+    "MostRecentFill" : "2016-09-19T00:00:00.000+0000"
+  }, {
+    "NumberOfFills" : 3,
+    "GenericDrugName" : "DIVALPROEX SODIUM",
+    "MostRecentFill" : "2016-09-19T00:00:00.000+0000"
+  } ],
+  "BHIPAdmissions" : [ {
+    "AdminDate" : "2017-05-05T00:00:00.000+0000",
+    "TILE_IND" : "H    ",
+    "FacilityName" : "1144381245 -  HARBOR OAKS HOSPITAL "
+  }, {
+    "AdminDate" : "2017-05-05T00:00:00.000+0000",
+    "TILE_IND" : "H    ",
+    "FacilityName" : "1144381245 -  HARBOR OAKS HOSPITAL "
+  } ],
+  "Dental" : [ {
+    "VisitDate" : "02/22/2016",
+    "TILE_IND" : "L    ",
+    "Provider" : "Hoover Family Dental "
+  }, {
+    "VisitDate" : "02/22/2016",
+    "TILE_IND" : "L    ",
+    "Provider" : "Hoover Family Dental "
+  } ]
+}
+----
+
+
+[[_beneficiarysummarychroniccondition]]
+=== beneficiaries/{beneID}/summary/chronicConditions
+....
+GET /beneficiaries/{beneID}/summary/chronicconditions
+....
+
+
+==== Description
+
+
+Returns a list of drill down details for the Chronic Conditions tile
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^9a,.^4a"]
+|===
+|Type|Name|Description|Schema
+|**Header**|**EHRSystem** +
+__required__|==== Description
+
+EHRSystem allows MDHHs to authorize one EHR to make requests while not
+authorizing another. The service must supply one of the names recorded in the
+web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *Any*.|string
+|**Header**|**planID** +
+__required__|==== Description
+
+planID and planType combine to uniquely identify organizations within CC360.
+They will be retrievable from CC360 via another service. 
+
+Consumer will use this service to populate their map mechanism so that
+incoming requests can be translated into the correct CC360 oganization details
+
+==== Mock server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *01*.|string
+|**Header**|**planLocation** +
+__required__|==== Description
+
+planLocation is provided to allow MDHHs to authorize logical or
+geographicalsubsets of an organization, for example- Grand Rapids or Diabetes Support Team.
+
+If the DUA with MDHHS does not identify any authorized subsets,
+the parameter will be set to 'ANY'.
+If it has any authorized subsets, the consumer must supply
+one of those names and cannot use 'ANY'
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *Any*.|string
+|**Header**|**planType** +
+__required__|==== Description
+
+planID and planType combine to uniquely identify organizations within CC360.
+they will be retrievable from CC360 via another service. 
+
+Consumer will use this service to populate their map mechanism
+so that incoming requests can be translated into the correct CC360
+organization details.
+
+Plan types are strings (ie PIHP, MHP, ICO, ….)
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *CMH*.|string
+|**Header**|**userID** +
+__required__|==== Description
+
+The name of the user from the Plan causing the API to be
+requested by the consumer
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using one user ID for all your tests.|string
+|**Header**|**validateACRS** +
+__required__|==== Description
+
+Consumer will be reviewing their own records to attempt to establish a
+currentcare-relationship between the organization and the beneficiary. 
+
+If it cannot (validAcrs = *False*), it will forward the request,
+and a CC360 service will in turn attempt to find a relationship in its
+authorization tables, and act according to that result.
+
+If MiHIN can validate the relationship (validAcrs = *True*)
+the behaviour of CC360 service will vary between an initial
+‘tuning’ phase and long-term production. 
+
+In the tuning phase, a CC360 service will always consult its own
+authorization tables and will act according to that value. 
+
+On a daily basis, a reconciliation report will be generated to compare
+Consumer and CC360 results, and MDHHS staff will work with Consumer to
+understand and correct any variations. Once the variations drop below a
+defined threshold (t.b.d), CC360 services will switch to always
+respecting any ACRS delivered True assertion.
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *True*.|enum (true, false)
+|**Path**|**beneID** +
+__required__|==== Description
+
+10 digit Bemeficiary Id, zero filled
+
+==== Mock Server
+
+The only Bedneficiary ID's available on the Mock server are 
+
+* *9999999006*
+* *9999999957*
+ *
+
+These beneficiary ID's do not exist in either the QA ir Production servers.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_summarychronicconditiontilemodel,SummaryChronicConditionTileModel>>
+|===
+
+
+==== Tags
+
+* Summary
+
+
+==== Example HTTP response
+
+===== Response 200
+[source,json]
+----
+{
+  "$ref" : "https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryChronicConditionsTile.json"
+}
+----
+
+
+[[_beneficiarysummaryedvisits]]
+=== beneficiaries/{beneID}/summary/edvisits
+....
+GET /beneficiaries/{beneID}/summary/edvisits
+....
+
+
+==== Description
+
+
+Returns a list of drill down details for the Emergency Department visits.
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^9a,.^4a"]
+|===
+|Type|Name|Description|Schema
+|**Header**|**EHRSystem** +
+__required__|==== Description
+
+EHRSystem allows MDHHs to authorize one EHR to make requests while not
+authorizing another. The service must supply one of the names recorded in the
+web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *Any*.|string
+|**Header**|**planID** +
+__required__|==== Description
+
+planID and planType combine to uniquely identify organizations within CC360.
+They will be retrievable from CC360 via another service. 
+
+Consumer will use this service to populate their map mechanism so that
+incoming requests can be translated into the correct CC360 oganization details
+
+==== Mock server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *01*.|string
+|**Header**|**planLocation** +
+__required__|==== Description
+
+planLocation is provided to allow MDHHs to authorize logical or
+geographicalsubsets of an organization, for example- Grand Rapids or Diabetes Support Team.
+
+If the DUA with MDHHS does not identify any authorized subsets,
+the parameter will be set to 'ANY'.
+If it has any authorized subsets, the consumer must supply
+one of those names and cannot use 'ANY'
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *Any*.|string
+|**Header**|**planType** +
+__required__|==== Description
+
+planID and planType combine to uniquely identify organizations within CC360.
+they will be retrievable from CC360 via another service. 
+
+Consumer will use this service to populate their map mechanism
+so that incoming requests can be translated into the correct CC360
+organization details.
+
+Plan types are strings (ie PIHP, MHP, ICO, ….)
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *CMH*.|string
+|**Header**|**userID** +
+__required__|==== Description
+
+The name of the user from the Plan causing the API to be
+requested by the consumer
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using one user ID for all your tests.|string
+|**Header**|**validateACRS** +
+__required__|==== Description
+
+Consumer will be reviewing their own records to attempt to establish a
+currentcare-relationship between the organization and the beneficiary. 
+
+If it cannot (validAcrs = *False*), it will forward the request,
+and a CC360 service will in turn attempt to find a relationship in its
+authorization tables, and act according to that result.
+
+If MiHIN can validate the relationship (validAcrs = *True*)
+the behaviour of CC360 service will vary between an initial
+‘tuning’ phase and long-term production. 
+
+In the tuning phase, a CC360 service will always consult its own
+authorization tables and will act according to that value. 
+
+On a daily basis, a reconciliation report will be generated to compare
+Consumer and CC360 results, and MDHHS staff will work with Consumer to
+understand and correct any variations. Once the variations drop below a
+defined threshold (t.b.d), CC360 services will switch to always
+respecting any ACRS delivered True assertion.
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *True*.|enum (true, false)
+|**Path**|**beneID** +
+__required__|==== Description
+
+10 digit Bemeficiary Id, zero filled
+
+==== Mock Server
+
+The only Bedneficiary ID's available on the Mock server are 
+
+* *9999999006*
+* *9999999957*
+ *
+
+These beneficiary ID's do not exist in either the QA ir Production servers.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_summaryedvisitsdrilldownmodel,SummaryEDVisitsDrillDownModel>>
+|===
+
+
+==== Tags
+
+* Summary
+
+
+==== Example HTTP response
+
+===== Response 200
+[source,json]
+----
+{
+  "$ref" : "https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryEDVisitsTileShort.json"
+}
+----
+
+
+[[_beneficiarysummaryipadmissions]]
+=== beneficiaries/{beneID}/summary/IPAdmisions
+....
+GET /beneficiaries/{beneID}/summary/ipadmissions
+....
+
+
+==== Description
+
+
+Returns a list of drill down details for the IP Admissions tile
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^9a,.^4a"]
+|===
+|Type|Name|Description|Schema
+|**Header**|**EHRSystem** +
+__required__|==== Description
+
+EHRSystem allows MDHHs to authorize one EHR to make requests while not
+authorizing another. The service must supply one of the names recorded in the
+web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *Any*.|string
+|**Header**|**planID** +
+__required__|==== Description
+
+planID and planType combine to uniquely identify organizations within CC360.
+They will be retrievable from CC360 via another service. 
+
+Consumer will use this service to populate their map mechanism so that
+incoming requests can be translated into the correct CC360 oganization details
+
+==== Mock server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *01*.|string
+|**Header**|**planLocation** +
+__required__|==== Description
+
+planLocation is provided to allow MDHHs to authorize logical or
+geographicalsubsets of an organization, for example- Grand Rapids or Diabetes Support Team.
+
+If the DUA with MDHHS does not identify any authorized subsets,
+the parameter will be set to 'ANY'.
+If it has any authorized subsets, the consumer must supply
+one of those names and cannot use 'ANY'
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *Any*.|string
+|**Header**|**planType** +
+__required__|==== Description
+
+planID and planType combine to uniquely identify organizations within CC360.
+they will be retrievable from CC360 via another service. 
+
+Consumer will use this service to populate their map mechanism
+so that incoming requests can be translated into the correct CC360
+organization details.
+
+Plan types are strings (ie PIHP, MHP, ICO, ….)
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *CMH*.|string
+|**Header**|**userID** +
+__required__|==== Description
+
+The name of the user from the Plan causing the API to be
+requested by the consumer
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using one user ID for all your tests.|string
+|**Header**|**validateACRS** +
+__required__|==== Description
+
+Consumer will be reviewing their own records to attempt to establish a
+currentcare-relationship between the organization and the beneficiary. 
+
+If it cannot (validAcrs = *False*), it will forward the request,
+and a CC360 service will in turn attempt to find a relationship in its
+authorization tables, and act according to that result.
+
+If MiHIN can validate the relationship (validAcrs = *True*)
+the behaviour of CC360 service will vary between an initial
+‘tuning’ phase and long-term production. 
+
+In the tuning phase, a CC360 service will always consult its own
+authorization tables and will act according to that value. 
+
+On a daily basis, a reconciliation report will be generated to compare
+Consumer and CC360 results, and MDHHS staff will work with Consumer to
+understand and correct any variations. Once the variations drop below a
+defined threshold (t.b.d), CC360 services will switch to always
+respecting any ACRS delivered True assertion.
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *True*.|enum (true, false)
+|**Path**|**beneID** +
+__required__|==== Description
+
+10 digit Bemeficiary Id, zero filled
+
+==== Mock Server
+
+The only Bedneficiary ID's available on the Mock server are 
+
+* *9999999006*
+* *9999999957*
+ *
+
+These beneficiary ID's do not exist in either the QA ir Production servers.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_summaryipadmissionsdrilldownmodel,SummaryIPAdmissionsDrillDownModel>>
+|===
+
+
+==== Tags
+
+* Summary
+
+
+==== Example HTTP response
+
+===== Response 200
+[source,json]
+----
+{
+  "$ref" : "https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryIPAdmissionsTile.json"
+}
+----
+
+
+[[_beneficiarysummarypharmacy]]
+=== beneficiaries/{beneID}/summary/pharmacy
+....
+GET /beneficiaries/{beneID}/summary/pharmacy
+....
+
+
+==== Description
+
+
+Returns a list of drill down details for the Pharmacy tile
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^9a,.^4a"]
+|===
+|Type|Name|Description|Schema
+|**Header**|**EHRSystem** +
+__required__|==== Description
+
+EHRSystem allows MDHHs to authorize one EHR to make requests while not
+authorizing another. The service must supply one of the names recorded in the
+web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *Any*.|string
+|**Header**|**planID** +
+__required__|==== Description
+
+planID and planType combine to uniquely identify organizations within CC360.
+They will be retrievable from CC360 via another service. 
+
+Consumer will use this service to populate their map mechanism so that
+incoming requests can be translated into the correct CC360 oganization details
+
+==== Mock server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *01*.|string
+|**Header**|**planLocation** +
+__required__|==== Description
+
+planLocation is provided to allow MDHHs to authorize logical or
+geographicalsubsets of an organization, for example- Grand Rapids or Diabetes Support Team.
+
+If the DUA with MDHHS does not identify any authorized subsets,
+the parameter will be set to 'ANY'.
+If it has any authorized subsets, the consumer must supply
+one of those names and cannot use 'ANY'
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *Any*.|string
+|**Header**|**planType** +
+__required__|==== Description
+
+planID and planType combine to uniquely identify organizations within CC360.
+they will be retrievable from CC360 via another service. 
+
+Consumer will use this service to populate their map mechanism
+so that incoming requests can be translated into the correct CC360
+organization details.
+
+Plan types are strings (ie PIHP, MHP, ICO, ….)
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *CMH*.|string
+|**Header**|**userID** +
+__required__|==== Description
+
+The name of the user from the Plan causing the API to be
+requested by the consumer
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using one user ID for all your tests.|string
+|**Header**|**validateACRS** +
+__required__|==== Description
+
+Consumer will be reviewing their own records to attempt to establish a
+currentcare-relationship between the organization and the beneficiary. 
+
+If it cannot (validAcrs = *False*), it will forward the request,
+and a CC360 service will in turn attempt to find a relationship in its
+authorization tables, and act according to that result.
+
+If MiHIN can validate the relationship (validAcrs = *True*)
+the behaviour of CC360 service will vary between an initial
+‘tuning’ phase and long-term production. 
+
+In the tuning phase, a CC360 service will always consult its own
+authorization tables and will act according to that value. 
+
+On a daily basis, a reconciliation report will be generated to compare
+Consumer and CC360 results, and MDHHS staff will work with Consumer to
+understand and correct any variations. Once the variations drop below a
+defined threshold (t.b.d), CC360 services will switch to always
+respecting any ACRS delivered True assertion.
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *True*.|enum (true, false)
+|**Path**|**beneID** +
+__required__|==== Description
+
+10 digit Bemeficiary Id, zero filled
+
+==== Mock Server
+
+The only Bedneficiary ID's available on the Mock server are 
+
+* *9999999006*
+* *9999999957*
+ *
+
+These beneficiary ID's do not exist in either the QA ir Production servers.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_summarypharmacydrilldownmodel,SummaryPharmacyDrillDownModel>>
+|===
+
+
+==== Tags
+
+* Summary
+
+
+==== Example HTTP response
+
+===== Response 200
+[source,json]
+----
+{
+  "$ref" : "https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryPharmacyTileShort.json"
+}
+----
+
+
+[[_beneficiarysummaryprocedurecodes]]
+=== beneficiaries/{beneID}/summary/procedurecodes
+....
+GET /beneficiaries/{beneID}/summary/procedurecodes
+....
+
+
+==== Description
+
+
+Returns a list of drill down details for the procedure codes tile
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^9a,.^4a"]
+|===
+|Type|Name|Description|Schema
+|**Header**|**EHRSystem** +
+__required__|==== Description
+
+EHRSystem allows MDHHs to authorize one EHR to make requests while not
+authorizing another. The service must supply one of the names recorded in the
+web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *Any*.|string
+|**Header**|**planID** +
+__required__|==== Description
+
+planID and planType combine to uniquely identify organizations within CC360.
+They will be retrievable from CC360 via another service. 
+
+Consumer will use this service to populate their map mechanism so that
+incoming requests can be translated into the correct CC360 oganization details
+
+==== Mock server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *01*.|string
+|**Header**|**planLocation** +
+__required__|==== Description
+
+planLocation is provided to allow MDHHs to authorize logical or
+geographicalsubsets of an organization, for example- Grand Rapids or Diabetes Support Team.
+
+If the DUA with MDHHS does not identify any authorized subsets,
+the parameter will be set to 'ANY'.
+If it has any authorized subsets, the consumer must supply
+one of those names and cannot use 'ANY'
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *Any*.|string
+|**Header**|**planType** +
+__required__|==== Description
+
+planID and planType combine to uniquely identify organizations within CC360.
+they will be retrievable from CC360 via another service. 
+
+Consumer will use this service to populate their map mechanism
+so that incoming requests can be translated into the correct CC360
+organization details.
+
+Plan types are strings (ie PIHP, MHP, ICO, ….)
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *CMH*.|string
+|**Header**|**userID** +
+__required__|==== Description
+
+The name of the user from the Plan causing the API to be
+requested by the consumer
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using one user ID for all your tests.|string
+|**Header**|**validateACRS** +
+__required__|==== Description
+
+Consumer will be reviewing their own records to attempt to establish a
+currentcare-relationship between the organization and the beneficiary. 
+
+If it cannot (validAcrs = *False*), it will forward the request,
+and a CC360 service will in turn attempt to find a relationship in its
+authorization tables, and act according to that result.
+
+If MiHIN can validate the relationship (validAcrs = *True*)
+the behaviour of CC360 service will vary between an initial
+‘tuning’ phase and long-term production. 
+
+In the tuning phase, a CC360 service will always consult its own
+authorization tables and will act according to that value. 
+
+On a daily basis, a reconciliation report will be generated to compare
+Consumer and CC360 results, and MDHHS staff will work with Consumer to
+understand and correct any variations. Once the variations drop below a
+defined threshold (t.b.d), CC360 services will switch to always
+respecting any ACRS delivered True assertion.
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *True*.|enum (true, false)
+|**Path**|**beneID** +
+__required__|==== Description
+
+10 digit Bemeficiary Id, zero filled
+
+==== Mock Server
+
+The only Bedneficiary ID's available on the Mock server are 
+
+* *9999999006*
+* *9999999957*
+ *
+
+These beneficiary ID's do not exist in either the QA ir Production servers.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_summaryprocedurecodestilemodel,SummaryProcedureCodesTileModel>>
+|===
+
+
+==== Tags
+
+* Summary
+
+
+==== Example HTTP response
+
+===== Response 200
+[source,json]
+----
+{ }
+----
+
+
+[[_beneficiarysummaryrecentproviders]]
+=== beneficiaries/{beneID}/summary/recentproviders
+....
+GET /beneficiaries/{beneID}/summary/recentproviders
+....
+
+
+==== Description
+
+
+Returns a list of drill down details for the Recent Providers tile
+
+
+==== Parameters
+
+[options="header", cols=".^2a,.^3a,.^9a,.^4a"]
+|===
+|Type|Name|Description|Schema
+|**Header**|**EHRSystem** +
+__required__|==== Description
+
+EHRSystem allows MDHHs to authorize one EHR to make requests while not
+authorizing another. The service must supply one of the names recorded in the
+web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *Any*.|string
+|**Header**|**planID** +
+__required__|==== Description
+
+planID and planType combine to uniquely identify organizations within CC360.
+They will be retrievable from CC360 via another service. 
+
+Consumer will use this service to populate their map mechanism so that
+incoming requests can be translated into the correct CC360 oganization details
+
+==== Mock server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *01*.|string
+|**Header**|**planLocation** +
+__required__|==== Description
+
+planLocation is provided to allow MDHHs to authorize logical or
+geographicalsubsets of an organization, for example- Grand Rapids or Diabetes Support Team.
+
+If the DUA with MDHHS does not identify any authorized subsets,
+the parameter will be set to 'ANY'.
+If it has any authorized subsets, the consumer must supply
+one of those names and cannot use 'ANY'
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *Any*.|string
+|**Header**|**planType** +
+__required__|==== Description
+
+planID and planType combine to uniquely identify organizations within CC360.
+they will be retrievable from CC360 via another service. 
+
+Consumer will use this service to populate their map mechanism
+so that incoming requests can be translated into the correct CC360
+organization details.
+
+Plan types are strings (ie PIHP, MHP, ICO, ….)
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *CMH*.|string
+|**Header**|**userID** +
+__required__|==== Description
+
+The name of the user from the Plan causing the API to be
+requested by the consumer
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using one user ID for all your tests.|string
+|**Header**|**validateACRS** +
+__required__|==== Description
+
+Consumer will be reviewing their own records to attempt to establish a
+currentcare-relationship between the organization and the beneficiary. 
+
+If it cannot (validAcrs = *False*), it will forward the request,
+and a CC360 service will in turn attempt to find a relationship in its
+authorization tables, and act according to that result.
+
+If MiHIN can validate the relationship (validAcrs = *True*)
+the behaviour of CC360 service will vary between an initial
+‘tuning’ phase and long-term production. 
+
+In the tuning phase, a CC360 service will always consult its own
+authorization tables and will act according to that value. 
+
+On a daily basis, a reconciliation report will be generated to compare
+Consumer and CC360 results, and MDHHS staff will work with Consumer to
+understand and correct any variations. Once the variations drop below a
+defined threshold (t.b.d), CC360 services will switch to always
+respecting any ACRS delivered True assertion.
+
+==== Mock Server
+
+* This parameter is not validated.
+* Any value will work.
+* Recommend using *True*.|enum (true, false)
+|**Path**|**beneID** +
+__required__|==== Description
+
+10 digit Bemeficiary Id, zero filled
+
+==== Mock Server
+
+The only Bedneficiary ID's available on the Mock server are 
+
+* *9999999006*
+* *9999999957*
+ *
+
+These beneficiary ID's do not exist in either the QA ir Production servers.|string
+|===
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_summaryrecentproviderstilemodel,SummaryRecentProvidersTileModel>>
+|===
+
+
+==== Tags
+
+* Summary
+
+
+==== Example HTTP response
+
+===== Response 200
+[source,json]
+----
+{
+  "$ref" : "https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryRecentProvidersTileShort.json"
+}
+----
+
+
+[[_planlist]]
+=== plans
+....
+GET /plans
+....
+
+
+==== Description
+
+
+Get a list of the Plans/Agencies including Plan ID, type,
+EHR System and location
+
+
+==== Responses
+
+[options="header", cols=".^2a,.^14a,.^4a"]
+|===
+|HTTP Code|Description|Schema
+|**200**|Success|<<_planmodel,PlanModel>>
+|===
+
+
+==== Tags
+
+* Plans
+
+
+==== Example HTTP response
+
+===== Response 200
+[source,json]
+----
+[ {
+  "PlanType" : "GCHAP",
+  "PlanID" : "01",
+  "PlanName" : "Genesee County zChildren’s Healthcare Access plan  ",
+  "EHRSystem" : "Any",
+  "Location" : "Any",
+  "ExtractDUA" : "Inactive",
+  "WebDUA" : "Active",
+  "APIDUA" : "Active"
+}, {
+  "PlanType" : "ICO",
+  "PlanID" : "11",
+  "PlanName" : "Aetna Better Health of Michigan",
+  "EHRSystem" : "Any",
+  "Location" : "Any",
+  "ExtractDUA" : "Inactive",
+  "WebDUA" : "Inactive",
+  "APIDUA" : "Active"
+} ]
+----
+
+
+

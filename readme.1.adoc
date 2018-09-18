@@ -1,0 +1,251 @@
+= Swagger to ASCIIDoc Markdown 
+John Schuster <John.schuster@PhoenixWorkgrpup.com>
+v2.1b, 07/19/2018: Research Notes
+:Author: John HR Schuster
+:Company: Phoenix Learning Labs
+:toc: left
+:toclevels: 4:
+:imagesdir: ./images
+:pagenums:
+:experimental:
+:source-hightlighter: pygments
+:icons: font
+:docdir: */documents
+:github: https://github.com/GeekMustHave/Swagger2ASCDoc
+:linkattrs:
+:seclinks:
+
+The Swagger API specification file is in a <<YAML>> format.  
+When used with SwaggerHub it provides excellent on-line documentation and testing services.
+However, sometimes a printed version of the swagger <<YAML>> file is needed.
+This method produces a PDF file from the Swagger <<YAML>> file.
+
+.Documentation
+[quote, How the Internet was created,Tim Berners-Lee]
+I basically wrote the code and the specs and documentation for how the client and server talked to each other.
+
+
+
+== GIT
+
+This project has a local GIT repository and a GMH private repository.
+
+{github}
+
+
+== Installation
+
+=== Project Code
+
+Download the project code for the Swagger2Markup-CLI
+
+  https://github.com/Swagger2Markup/swagger2markup-cli.ZIP
+
+Unzip it into a directory
+
+.Swagger2Markup-CLI directory
+[source,Powershell]
+----
+Directory: F:\users\jschust2\Dropbox\myDev\Swagger2Markdown\Swagger2Markup GIT\swagger2markup-master
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+da----        7/12/2018   9:24 AM                gradle
+da----        7/12/2018   9:24 AM                src
+-a----        7/12/2018   9:24 AM             66 .gitignore
+-a----        7/12/2018   9:24 AM           1151 .travis.yml
+-a----        7/12/2018   9:24 AM           2175 build.gradle
+-a----        7/12/2018   9:24 AM             64 gradle.properties
+-a----        7/12/2018   9:24 AM           5299 gradlew
+-a----        7/12/2018   9:24 AM           2260 gradlew.bat
+-a----        7/12/2018   9:24 AM            378 ISSUE_TEMPLATE
+-a----        7/12/2018   9:24 AM          11325 LICENSE.txt
+-a----        7/12/2018   9:24 AM           6321 README.adoc
+-a----        7/12/2018   9:24 AM           5539 RELEASENOTES.adoc
+-a----        7/12/2018   9:24 AM             35 settings.gradle
+----
+
+=== Compile the code
+
+To compile the code you will need to the have Java Development Kit (JDK) installed.  It is not the same of the Java Runtime Environment (JRE)
+
+The JDK can be found at http://www.oracle.com/technetwork/java/javase/downloads/jdk10-downloads-4416644.html it is 390 MB.  You should also get the match JRE for the JDK.
+
+* jdk-10.0.2_windows-x64_bin.exe - JDK developer Installation
+* jre-10.0.2_windows-x64_bin.exe - JRE Runtime environment
+
+
+
+
+
+Within the directory shown above execute the following command
+
+  gradle assemble
+
+Lots of stuff will flash across the terminal window.
+
+.Gradle compile fail
+image::gradlefail.png[Gradle Fail]
+
+Check the Java Version information
+
+.Java Version
+[source,Powershell]
+----
+PS F:\users\jschust2\Dropbox\myDev\Swagger2Markdown\Swagger2Markup GIT\swagger2markup-master> java -version <1>
+java version "1.8.0_161"
+Java(TM) SE Runtime Environment (build 1.8.0_161-b12)
+Java HotSpot(TM) Client VM (build 25.161-b12, mixed mode, sharing)
+----
+
+<1> Command to execute
+
+The resolution seems to be to locate `gradle.properties` and add a line to point to the java home folder.
+
+NOTE: The `JAVA_HOME` and `java_home` are different things.
+
+Here is the location of the java home directory on my development system.
+
+.Java Home directorty
+image::gradlejavahome.png[Java Home directorty, align='center']
+
+Make the following change to the `gradle.properties` file
+
+.gradle.properies change
+image::gradleproperties.png[gradle.properies change, align='center']
+ 
+
+
+
+ 
+
+
+
+
+
+=== JAVA ????
+
+Download the JAVA <<JAR>> file from https://jcenter.bintray.com/io/github/swagger2markup/swagger2markup/.
+
+Copy the JAR file to your Java library or into the project directory.
+
+NOTE: Current version was 1.3.3.  I copied it `swagger2markup.jar` to allow the script to handle this better.
+
+=== GRADLE Build tool
+
+Gradle is a build tool used for Java, C++, Python and other languages.
+
+* The download for the Gradle binary is https://gradle.org/next-steps/?version=4.9&format=bin
+
+* Create a new directory `C:\Gradle` with File Explorer.
+
+* Open a second File Explorer window and go to the directory where the Gradle distribution was downloaded. Double-click the ZIP archive to expose the content. Drag the content folder `gradle-4.9` to your newly created `C:\Gradle` folder.
+
+* In File Explorer right-click on the This PC (or Computer) icon, then click Properties -> Advanced System Settings -> Environmental Variables.
+
+* Under System Variables select Path, then click Edit. Add an entry for `C:\Gradle\gradle-4.9\bin`. Click OK to save.
+
+.Environment Variable PATH
+image::environment.png[Environment Variable PATH, align='center']
+ 
+* Verify gradle has been installed
+
+.Gradle Test
+[source,Powershell
+----
+PS F:\users\jschust2\Dropbox\myDev\Swagger2Markdown> gradle -v <1>
+
+Welcome to Gradle 4.9!
+
+Here are the highlights of this release:
+ - Experimental APIs for creating and configuring tasks lazily
+ - Pass arguments to JavaExec via CLI
+ - Auxiliary publication dependency support for multi-project builds
+ - Improved dependency insight report
+
+For more details see https://docs.gradle.org/4.9/release-notes.html
+
+
+------------------------------------------------------------
+Gradle 4.9
+------------------------------------------------------------
+
+Build time:   2018-07-16 08:14:03 UTC
+Revision:     efcf8c1cf533b03c70f394f270f46a174c738efc
+
+Kotlin DSL:   0.18.4
+Kotlin:       1.2.41
+Groovy:       2.4.12
+Ant:          Apache Ant(TM) version 1.9.11 compiled on March 23 2018
+JVM:          1.8.0_161 (Oracle Corporation 25.161-b12)
+OS:           Windows 10 10.0 x86
+----
+
+<1> Command to enter
+
+
+=== SWAGGER YAML file
+
+The Swagger specification can be saved to a <<YAML>> or a <<JSON>> file format.
+
+link:CC360-api.yaml[Swagger YAML Example]
+
+
+
+
+=== Swagger2Markup example
+
+You can clone and build the jar, then use this CLI to generate asciidocs.
+
+ gradle assemble
+ java -jar ./build/libs/swagger2markup-cli-X.X.X.jar convert -i the_swagger_file.json -d /the/path/to/output
+
+
+
+So for the example in this project
+
+  java -jar ./swagger2markup.jar convert -i cc360-API.yaml -d ./doco/CC360-API.adoc 
+
+
+
+<<<<
+== References
+
+=== Swagger2Markdown
+
+https://github.com/Swagger2Markup/swagger2markup
+
+The primary goal of this project is to simplify the generation of an up-to-date RESTful API documentation by combining documentation that’s been hand-written with auto-generated API documentation produced by Swagger. The result is intended to be an up-to-date, easy-to-read, on- and offline user guide, comparable to GitHub’s API documentation. The output of Swagger2Markup can be used as an alternative to swagger-ui and can be served as static content.
+
+NOTE: The Swagger Specification has been donated to to the Open API Initiative (OAI) and has been renamed to the OpenAPI Specification.
+
+http://swagger2markup.github.io/swagger2markup/1.3.3/
+
+Swagger2Markdown Documentation.  
+
+=== Swagger2Markdown CLI
+
+https://github.com/Swagger2Markup/swagger2markup-cli
+
+This is a CLI for Swagger2Markup. It converts a Swagger JSON or YAML file into several AsciiDoc or GitHub Flavored Markdown documents which can be combined with hand-written documentation. The Swagger source file can be located locally or remotely via HTTP. Swagger2Markup supports the Swagger 1.2 and 2.0 specification.
+
+
+<<<<
+== Question and Answers
+[qanda]
+How Fast can a Cheetah run?::
+Faster than you.
+
+<<<<
+== Glossary
+
+[[JSON]]
+JSON::
+JavaScript Object Notation.
+
+
+[[YAML]]
+YAML::
+Yet Another Markdown Language
+ 

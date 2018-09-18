@@ -1,14 +1,16 @@
 ---
 swagger: "2.0"
 info:
-  description: "# `Optum Government Systems`\n\nThe API is designed for use by Optum\
-    \ web applications including \nCareConnect 360 and the CareConnect API.\n\n##\
-    \ Protected Health Information Warning\nThe *(request)* and *(response)* may contain\
-    \ \n**Protected Health Information (PHI)**.\n\n## Usage\nUse of this API is resitricted\
-    \ and limited \nby State of Michigan Department of Human and Health Services **(MDHHS)**\
-    \ \nand by     United Health Care **(UHC)** security policies.'\n\n## TEST Edition\n\
-    This version of the API specification is considered a **TEST** and subject to\
-    \ \nchange with notice.\n"
+  description: "### `Optum Government Systems`\n\nThe API is designed for use by Optum\
+    \ web applications including \nCareConnect 360 and the CareConnect API.\n\n####\
+    \ Protected Health Information Warning\nThe *(request)* and *(response)* of the\
+    \ QA and Production servers **WILL** contain \n**Protected Health Information\
+    \ (PHI)**.\n\nThe *(request)* and *(response)* of the Mock server will **NOT**\
+    \ contain \n**Protected Health Information (PHI)**.  \n\n#### Usage\nUse of this\
+    \ API is resitricted and limited \nby State of Michigan Department of Human and\
+    \ Health Services **(MDHHS)** \nand by United Health Care **(UHC)** security policies.'\n\
+    \n#### TEST Edition\nThis version of the API specification is considered a **TEST**\
+    \ and subject to \nchange with notice.\n"
   version: v1
   title: CC360 API Version 0.90.5
   termsOfService: None
@@ -27,6 +29,7 @@ consumes:
 - application/json
 produces:
 - application/json
+- application/html
 security:
 - basicAuth: []
 paths:
@@ -49,8 +52,6 @@ paths:
         200:
           description: Success
           schema:
-            $ref: '#/definitions/HelloWorldModel'
-          responseSchema:
             $ref: '#/definitions/HelloWorldModel'
   /plans:
     get:
@@ -84,8 +85,6 @@ paths:
               APIDUA: Active
           schema:
             $ref: '#/definitions/PlanModel'
-          responseSchema:
-            $ref: '#/definitions/PlanModel'
   /beneficiaries/{beneID}/summary:
     get:
       tags:
@@ -110,56 +109,49 @@ paths:
       parameters:
       - name: planID
         in: header
-        description: "## Description\nplanID and planType combine to uniquely identify\
+        description: "#### Description\nplanID and planType combine to uniquely identify\
           \ organizations within CC360.\nThey will be retrievable from CC360 via another\
-          \ service. \n----\n\nConsumer will use this service to populate their map\
-          \ mechanism so that incoming \nrequests can be translated into the correct\
-          \ CC360 organization details.\n\n----\n## Mock server    \n* This parameter\
-          \ is not validated.\n* Any value will work.\n* Recommend using **01**.\n"
+          \ service. \n\nConsumer will use this service to populate their map mechanism\
+          \ so that\nincoming requests can be translated into the correct CC360 oganization\
+          \ details\n\n\n#### Mock server    \n* This parameter is not validated.\n\
+          * Any value will work.\n* Recommend using **01**.\n"
         required: true
         type: string
         maxLength: 2
         minLength: 2
       - name: planType
         in: header
-        description: "## Description\nplanID and planType combine to uniquely identify\
+        description: "#### Description\nplanID and planType combine to uniquely identify\
           \ organizations within CC360.\nthey will be retrievable from CC360 via another\
-          \ service. \n----\nConsumer  will use this\nservice to populate their map\
-          \ mechanism so that incoming requests can be\ntranslated into the correct\
-          \ CC360 organization details.\n----\nPlan types are strings (ie PIHP, MHP,\
-          \ ICO, ....)\n\n## Mock Server\n* This parameter is not validated.\n* Any\
-          \ value will work.\n* Recommend using **CMH**.\n"
+          \ service. \n\nConsumer  will use this service to populate their map mechanism\
+          \ \nso that incoming requests can be translated into the correct CC360\n\
+          organization details.\n\nPlan types are strings (ie PIHP, MHP, ICO, ....)\n\
+          \n#### Mock Server\n* This parameter is not validated.\n* Any value will\
+          \ work.\n* Recommend using **CMH**.\n"
         required: true
         type: string
         maxLength: 10
       - name: planLocation
         in: header
-        description: |
-          ## Description
-          planLocation is provided to allow MDHHs to authorize logical or
-          geographicalsubsets of an organization, for example- Grand Rapids or
-          Diabetes Support Team.
-          ----
-          If the DUA with MDHHS does not identify any authorized
-          subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
-          the consumer must supply one of those names and cannot use 'ANY'
-
-          ## Mock Server
-          * This parameter is not validated.
-          * Any value will work.
-          * Recommend using **Any**.
+        description: "#### Description\nplanLocation is provided to allow MDHHs to\
+          \ authorize logical or\ngeographicalsubsets of an organization, for example-\
+          \ Grand Rapids or Diabetes Support Team.\n\nIf the DUA with MDHHS does not\
+          \ identify any authorized subsets, \nthe parameter will be set to 'ANY'.\
+          \ \nIf it has any authorized subsets, the consumer must supply \none of\
+          \ those names and cannot use 'ANY'\n\n#### Mock Server\n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using **Any**.\n"
         required: true
         type: string
         maxLength: 30
       - name: EHRSystem
         in: header
         description: |
-          ## Description
+          #### Description
           EHRSystem allows MDHHs to authorize one EHR to make requests while not
           authorizing another. The service must supply one of the names recorded in the
           web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
 
-          ## Mock Server
+          #### Mock Server
           * This parameter is not validated.
           * Any value will work.
           * Recommend using **Any**.
@@ -168,22 +160,22 @@ paths:
         maxLength: 30
       - name: validateACRS
         in: header
-        description: "## Description\nConsumer will be reviewing their own records\
+        description: "#### Description\nConsumer will be reviewing their own records\
           \ to attempt to establish a\ncurrentcare-relationship between the organization\
-          \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it\
-          \ will forward the request, and a CC360 service\nwill in turn attempt to\
-          \ find a relationship in its authorization tables, and\nact according to\
-          \ the result.\n----\nIf MiHIN can validate the relationship (validAcrs =\
-          \ **True**) the behaviour of\nCC360 service will vary between an initial\
-          \ ‘tuning’ phase and long-term\nproduction. \n----\nIn the tuning phase,\
-          \ a CC360 service will always consult its own\nauthorization tables and\
-          \ will act according to that value. \n----\nDaily, a reconciliation report\
-          \ will be generated to compare Consumer and CC360 results,\nand MDHHS staff\
-          \ will work with Consumer to understand and correct any variations.\nOnce\
-          \ the variations drop below a defined threshold (t.b.d), CC360 services\n\
-          will switch to always respecting any ACRS delivered True assertion.\n\n\
-          ## Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
-          * Recommend using **True**.\n"
+          \ and the beneficiary. \n\nIf it cannot (validAcrs = **False**), it will\
+          \ forward the request, \nand a CC360 service will in turn attempt to find\
+          \ a relationship in its\nauthorization tables, and act according to that\
+          \ result.\n\nIf MiHIN can validate the relationship (validAcrs = **True**)\
+          \ \nthe behaviour of CC360 service will vary between an initial \n‘tuning’\
+          \ phase and long-term production. \n\nIn the tuning phase, a CC360 service\
+          \ will always consult its own\nauthorization tables and will act according\
+          \ to that value. \n\nOn a daily basis, a reconciliation report will be generated\
+          \ to compare\nConsumer and CC360 results,  and MDHHS staff will work with\
+          \ Consumer to\nunderstand and correct any variations. Once the variations\
+          \ drop below a\ndefined threshold (t.b.d), CC360 services will switch to\
+          \ always \nrespecting any ACRS delivered True assertion.\n\n#### Mock Server\n\
+          * This parameter is not validated.\n* Any value will work.\n* Recommend\
+          \ using **True**.\n"
         required: true
         type: boolean
         enum:
@@ -191,19 +183,19 @@ paths:
         - "false"
       - name: userID
         in: header
-        description: "## Description\nThe name of the user from the Plan causing the\
-          \ API to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter\
-          \ is not validated.\n* Any value will work.\n* Recommend using one user\
-          \ ID for all your tests.\n"
+        description: "#### Description\nThe name of the user from the Plan causing\
+          \ the API to be \nrequested by  the consumer\n\n#### Mock Server\n* This\
+          \ parameter is not validated.\n* Any value will work.\n* Recommend using\
+          \ one user ID for all your tests.\n"
         required: true
         type: string
         maxLength: 30
       - name: beneID
         in: path
-        description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
-          \ Server\n\nThe only Bedneficiary ID's available on the Mock server are\
-          \ \n  * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not\
-          \ exist in either the QA ir Production servers.\n\n  \n"
+        description: "#### Description\n10 digit Bemeficiary Id, zero filled\n\n####\
+          \ Mock Server\n\nThe only Bedneficiary ID's available on the Mock server\
+          \ are \n\n  * **9999999006**\n  * **9999999957**\n  *\n  \nThese beneficiary\
+          \ ID's do not exist in either the QA ir Production servers.\n\n  \n"
         required: true
         type: string
         maxLength: 10
@@ -211,12 +203,7 @@ paths:
       responses:
         200:
           description: Success
-          examples:
-            application/json:
-              $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/ClientSummary.json
           schema:
-            $ref: '#/definitions/ClientSummaryTilesModel'
-          responseSchema:
             $ref: '#/definitions/ClientSummaryTilesModel'
   /beneficiaries/{beneID}/summary/chronicconditions:
     get:
@@ -230,56 +217,49 @@ paths:
       parameters:
       - name: planID
         in: header
-        description: "## Description\nplanID and planType combine to uniquely identify\
+        description: "#### Description\nplanID and planType combine to uniquely identify\
           \ organizations within CC360.\nThey will be retrievable from CC360 via another\
-          \ service. \n----\n\nConsumer will use this service to populate their map\
-          \ mechanism so that incoming \nrequests can be translated into the correct\
-          \ CC360 organization details.\n\n----\n## Mock server    \n* This parameter\
-          \ is not validated.\n* Any value will work.\n* Recommend using **01**.\n"
+          \ service. \n\nConsumer will use this service to populate their map mechanism\
+          \ so that\nincoming requests can be translated into the correct CC360 oganization\
+          \ details\n\n\n#### Mock server    \n* This parameter is not validated.\n\
+          * Any value will work.\n* Recommend using **01**.\n"
         required: true
         type: string
         maxLength: 2
         minLength: 2
       - name: planType
         in: header
-        description: "## Description\nplanID and planType combine to uniquely identify\
+        description: "#### Description\nplanID and planType combine to uniquely identify\
           \ organizations within CC360.\nthey will be retrievable from CC360 via another\
-          \ service. \n----\nConsumer  will use this\nservice to populate their map\
-          \ mechanism so that incoming requests can be\ntranslated into the correct\
-          \ CC360 organization details.\n----\nPlan types are strings (ie PIHP, MHP,\
-          \ ICO, ....)\n\n## Mock Server\n* This parameter is not validated.\n* Any\
-          \ value will work.\n* Recommend using **CMH**.\n"
+          \ service. \n\nConsumer  will use this service to populate their map mechanism\
+          \ \nso that incoming requests can be translated into the correct CC360\n\
+          organization details.\n\nPlan types are strings (ie PIHP, MHP, ICO, ....)\n\
+          \n#### Mock Server\n* This parameter is not validated.\n* Any value will\
+          \ work.\n* Recommend using **CMH**.\n"
         required: true
         type: string
         maxLength: 10
       - name: planLocation
         in: header
-        description: |
-          ## Description
-          planLocation is provided to allow MDHHs to authorize logical or
-          geographicalsubsets of an organization, for example- Grand Rapids or
-          Diabetes Support Team.
-          ----
-          If the DUA with MDHHS does not identify any authorized
-          subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
-          the consumer must supply one of those names and cannot use 'ANY'
-
-          ## Mock Server
-          * This parameter is not validated.
-          * Any value will work.
-          * Recommend using **Any**.
+        description: "#### Description\nplanLocation is provided to allow MDHHs to\
+          \ authorize logical or\ngeographicalsubsets of an organization, for example-\
+          \ Grand Rapids or Diabetes Support Team.\n\nIf the DUA with MDHHS does not\
+          \ identify any authorized subsets, \nthe parameter will be set to 'ANY'.\
+          \ \nIf it has any authorized subsets, the consumer must supply \none of\
+          \ those names and cannot use 'ANY'\n\n#### Mock Server\n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using **Any**.\n"
         required: true
         type: string
         maxLength: 30
       - name: EHRSystem
         in: header
         description: |
-          ## Description
+          #### Description
           EHRSystem allows MDHHs to authorize one EHR to make requests while not
           authorizing another. The service must supply one of the names recorded in the
           web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
 
-          ## Mock Server
+          #### Mock Server
           * This parameter is not validated.
           * Any value will work.
           * Recommend using **Any**.
@@ -288,22 +268,22 @@ paths:
         maxLength: 30
       - name: validateACRS
         in: header
-        description: "## Description\nConsumer will be reviewing their own records\
+        description: "#### Description\nConsumer will be reviewing their own records\
           \ to attempt to establish a\ncurrentcare-relationship between the organization\
-          \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it\
-          \ will forward the request, and a CC360 service\nwill in turn attempt to\
-          \ find a relationship in its authorization tables, and\nact according to\
-          \ the result.\n----\nIf MiHIN can validate the relationship (validAcrs =\
-          \ **True**) the behaviour of\nCC360 service will vary between an initial\
-          \ ‘tuning’ phase and long-term\nproduction. \n----\nIn the tuning phase,\
-          \ a CC360 service will always consult its own\nauthorization tables and\
-          \ will act according to that value. \n----\nDaily, a reconciliation report\
-          \ will be generated to compare Consumer and CC360 results,\nand MDHHS staff\
-          \ will work with Consumer to understand and correct any variations.\nOnce\
-          \ the variations drop below a defined threshold (t.b.d), CC360 services\n\
-          will switch to always respecting any ACRS delivered True assertion.\n\n\
-          ## Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
-          * Recommend using **True**.\n"
+          \ and the beneficiary. \n\nIf it cannot (validAcrs = **False**), it will\
+          \ forward the request, \nand a CC360 service will in turn attempt to find\
+          \ a relationship in its\nauthorization tables, and act according to that\
+          \ result.\n\nIf MiHIN can validate the relationship (validAcrs = **True**)\
+          \ \nthe behaviour of CC360 service will vary between an initial \n‘tuning’\
+          \ phase and long-term production. \n\nIn the tuning phase, a CC360 service\
+          \ will always consult its own\nauthorization tables and will act according\
+          \ to that value. \n\nOn a daily basis, a reconciliation report will be generated\
+          \ to compare\nConsumer and CC360 results,  and MDHHS staff will work with\
+          \ Consumer to\nunderstand and correct any variations. Once the variations\
+          \ drop below a\ndefined threshold (t.b.d), CC360 services will switch to\
+          \ always \nrespecting any ACRS delivered True assertion.\n\n#### Mock Server\n\
+          * This parameter is not validated.\n* Any value will work.\n* Recommend\
+          \ using **True**.\n"
         required: true
         type: boolean
         enum:
@@ -311,19 +291,19 @@ paths:
         - "false"
       - name: userID
         in: header
-        description: "## Description\nThe name of the user from the Plan causing the\
-          \ API to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter\
-          \ is not validated.\n* Any value will work.\n* Recommend using one user\
-          \ ID for all your tests.\n"
+        description: "#### Description\nThe name of the user from the Plan causing\
+          \ the API to be \nrequested by  the consumer\n\n#### Mock Server\n* This\
+          \ parameter is not validated.\n* Any value will work.\n* Recommend using\
+          \ one user ID for all your tests.\n"
         required: true
         type: string
         maxLength: 30
       - name: beneID
         in: path
-        description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
-          \ Server\n\nThe only Bedneficiary ID's available on the Mock server are\
-          \ \n  * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not\
-          \ exist in either the QA ir Production servers.\n\n  \n"
+        description: "#### Description\n10 digit Bemeficiary Id, zero filled\n\n####\
+          \ Mock Server\n\nThe only Bedneficiary ID's available on the Mock server\
+          \ are \n\n  * **9999999006**\n  * **9999999957**\n  *\n  \nThese beneficiary\
+          \ ID's do not exist in either the QA ir Production servers.\n\n  \n"
         required: true
         type: string
         maxLength: 10
@@ -335,8 +315,6 @@ paths:
             application/json:
               $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryChronicConditionsTile.json
           schema:
-            $ref: '#/definitions/SummaryChronicConditionTileModel'
-          responseSchema:
             $ref: '#/definitions/SummaryChronicConditionTileModel'
   /beneficiaries/{beneID}/summary/pharmacy:
     get:
@@ -350,56 +328,49 @@ paths:
       parameters:
       - name: planID
         in: header
-        description: "## Description\nplanID and planType combine to uniquely identify\
+        description: "#### Description\nplanID and planType combine to uniquely identify\
           \ organizations within CC360.\nThey will be retrievable from CC360 via another\
-          \ service. \n----\n\nConsumer will use this service to populate their map\
-          \ mechanism so that incoming \nrequests can be translated into the correct\
-          \ CC360 organization details.\n\n----\n## Mock server    \n* This parameter\
-          \ is not validated.\n* Any value will work.\n* Recommend using **01**.\n"
+          \ service. \n\nConsumer will use this service to populate their map mechanism\
+          \ so that\nincoming requests can be translated into the correct CC360 oganization\
+          \ details\n\n\n#### Mock server    \n* This parameter is not validated.\n\
+          * Any value will work.\n* Recommend using **01**.\n"
         required: true
         type: string
         maxLength: 2
         minLength: 2
       - name: planType
         in: header
-        description: "## Description\nplanID and planType combine to uniquely identify\
+        description: "#### Description\nplanID and planType combine to uniquely identify\
           \ organizations within CC360.\nthey will be retrievable from CC360 via another\
-          \ service. \n----\nConsumer  will use this\nservice to populate their map\
-          \ mechanism so that incoming requests can be\ntranslated into the correct\
-          \ CC360 organization details.\n----\nPlan types are strings (ie PIHP, MHP,\
-          \ ICO, ....)\n\n## Mock Server\n* This parameter is not validated.\n* Any\
-          \ value will work.\n* Recommend using **CMH**.\n"
+          \ service. \n\nConsumer  will use this service to populate their map mechanism\
+          \ \nso that incoming requests can be translated into the correct CC360\n\
+          organization details.\n\nPlan types are strings (ie PIHP, MHP, ICO, ....)\n\
+          \n#### Mock Server\n* This parameter is not validated.\n* Any value will\
+          \ work.\n* Recommend using **CMH**.\n"
         required: true
         type: string
         maxLength: 10
       - name: planLocation
         in: header
-        description: |
-          ## Description
-          planLocation is provided to allow MDHHs to authorize logical or
-          geographicalsubsets of an organization, for example- Grand Rapids or
-          Diabetes Support Team.
-          ----
-          If the DUA with MDHHS does not identify any authorized
-          subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
-          the consumer must supply one of those names and cannot use 'ANY'
-
-          ## Mock Server
-          * This parameter is not validated.
-          * Any value will work.
-          * Recommend using **Any**.
+        description: "#### Description\nplanLocation is provided to allow MDHHs to\
+          \ authorize logical or\ngeographicalsubsets of an organization, for example-\
+          \ Grand Rapids or Diabetes Support Team.\n\nIf the DUA with MDHHS does not\
+          \ identify any authorized subsets, \nthe parameter will be set to 'ANY'.\
+          \ \nIf it has any authorized subsets, the consumer must supply \none of\
+          \ those names and cannot use 'ANY'\n\n#### Mock Server\n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using **Any**.\n"
         required: true
         type: string
         maxLength: 30
       - name: EHRSystem
         in: header
         description: |
-          ## Description
+          #### Description
           EHRSystem allows MDHHs to authorize one EHR to make requests while not
           authorizing another. The service must supply one of the names recorded in the
           web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
 
-          ## Mock Server
+          #### Mock Server
           * This parameter is not validated.
           * Any value will work.
           * Recommend using **Any**.
@@ -408,22 +379,22 @@ paths:
         maxLength: 30
       - name: validateACRS
         in: header
-        description: "## Description\nConsumer will be reviewing their own records\
+        description: "#### Description\nConsumer will be reviewing their own records\
           \ to attempt to establish a\ncurrentcare-relationship between the organization\
-          \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it\
-          \ will forward the request, and a CC360 service\nwill in turn attempt to\
-          \ find a relationship in its authorization tables, and\nact according to\
-          \ the result.\n----\nIf MiHIN can validate the relationship (validAcrs =\
-          \ **True**) the behaviour of\nCC360 service will vary between an initial\
-          \ ‘tuning’ phase and long-term\nproduction. \n----\nIn the tuning phase,\
-          \ a CC360 service will always consult its own\nauthorization tables and\
-          \ will act according to that value. \n----\nDaily, a reconciliation report\
-          \ will be generated to compare Consumer and CC360 results,\nand MDHHS staff\
-          \ will work with Consumer to understand and correct any variations.\nOnce\
-          \ the variations drop below a defined threshold (t.b.d), CC360 services\n\
-          will switch to always respecting any ACRS delivered True assertion.\n\n\
-          ## Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
-          * Recommend using **True**.\n"
+          \ and the beneficiary. \n\nIf it cannot (validAcrs = **False**), it will\
+          \ forward the request, \nand a CC360 service will in turn attempt to find\
+          \ a relationship in its\nauthorization tables, and act according to that\
+          \ result.\n\nIf MiHIN can validate the relationship (validAcrs = **True**)\
+          \ \nthe behaviour of CC360 service will vary between an initial \n‘tuning’\
+          \ phase and long-term production. \n\nIn the tuning phase, a CC360 service\
+          \ will always consult its own\nauthorization tables and will act according\
+          \ to that value. \n\nOn a daily basis, a reconciliation report will be generated\
+          \ to compare\nConsumer and CC360 results,  and MDHHS staff will work with\
+          \ Consumer to\nunderstand and correct any variations. Once the variations\
+          \ drop below a\ndefined threshold (t.b.d), CC360 services will switch to\
+          \ always \nrespecting any ACRS delivered True assertion.\n\n#### Mock Server\n\
+          * This parameter is not validated.\n* Any value will work.\n* Recommend\
+          \ using **True**.\n"
         required: true
         type: boolean
         enum:
@@ -431,19 +402,19 @@ paths:
         - "false"
       - name: userID
         in: header
-        description: "## Description\nThe name of the user from the Plan causing the\
-          \ API to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter\
-          \ is not validated.\n* Any value will work.\n* Recommend using one user\
-          \ ID for all your tests.\n"
+        description: "#### Description\nThe name of the user from the Plan causing\
+          \ the API to be \nrequested by  the consumer\n\n#### Mock Server\n* This\
+          \ parameter is not validated.\n* Any value will work.\n* Recommend using\
+          \ one user ID for all your tests.\n"
         required: true
         type: string
         maxLength: 30
       - name: beneID
         in: path
-        description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
-          \ Server\n\nThe only Bedneficiary ID's available on the Mock server are\
-          \ \n  * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not\
-          \ exist in either the QA ir Production servers.\n\n  \n"
+        description: "#### Description\n10 digit Bemeficiary Id, zero filled\n\n####\
+          \ Mock Server\n\nThe only Bedneficiary ID's available on the Mock server\
+          \ are \n\n  * **9999999006**\n  * **9999999957**\n  *\n  \nThese beneficiary\
+          \ ID's do not exist in either the QA ir Production servers.\n\n  \n"
         required: true
         type: string
         maxLength: 10
@@ -455,8 +426,6 @@ paths:
             application/json:
               $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryPharmacyTileShort.json
           schema:
-            $ref: '#/definitions/SummaryPharmacyDrillDownModel'
-          responseSchema:
             $ref: '#/definitions/SummaryPharmacyDrillDownModel'
   /beneficiaries/{beneID}/summary/ipadmissions:
     get:
@@ -470,56 +439,49 @@ paths:
       parameters:
       - name: planID
         in: header
-        description: "## Description\nplanID and planType combine to uniquely identify\
+        description: "#### Description\nplanID and planType combine to uniquely identify\
           \ organizations within CC360.\nThey will be retrievable from CC360 via another\
-          \ service. \n----\n\nConsumer will use this service to populate their map\
-          \ mechanism so that incoming \nrequests can be translated into the correct\
-          \ CC360 organization details.\n\n----\n## Mock server    \n* This parameter\
-          \ is not validated.\n* Any value will work.\n* Recommend using **01**.\n"
+          \ service. \n\nConsumer will use this service to populate their map mechanism\
+          \ so that\nincoming requests can be translated into the correct CC360 oganization\
+          \ details\n\n\n#### Mock server    \n* This parameter is not validated.\n\
+          * Any value will work.\n* Recommend using **01**.\n"
         required: true
         type: string
         maxLength: 2
         minLength: 2
       - name: planType
         in: header
-        description: "## Description\nplanID and planType combine to uniquely identify\
+        description: "#### Description\nplanID and planType combine to uniquely identify\
           \ organizations within CC360.\nthey will be retrievable from CC360 via another\
-          \ service. \n----\nConsumer  will use this\nservice to populate their map\
-          \ mechanism so that incoming requests can be\ntranslated into the correct\
-          \ CC360 organization details.\n----\nPlan types are strings (ie PIHP, MHP,\
-          \ ICO, ....)\n\n## Mock Server\n* This parameter is not validated.\n* Any\
-          \ value will work.\n* Recommend using **CMH**.\n"
+          \ service. \n\nConsumer  will use this service to populate their map mechanism\
+          \ \nso that incoming requests can be translated into the correct CC360\n\
+          organization details.\n\nPlan types are strings (ie PIHP, MHP, ICO, ....)\n\
+          \n#### Mock Server\n* This parameter is not validated.\n* Any value will\
+          \ work.\n* Recommend using **CMH**.\n"
         required: true
         type: string
         maxLength: 10
       - name: planLocation
         in: header
-        description: |
-          ## Description
-          planLocation is provided to allow MDHHs to authorize logical or
-          geographicalsubsets of an organization, for example- Grand Rapids or
-          Diabetes Support Team.
-          ----
-          If the DUA with MDHHS does not identify any authorized
-          subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
-          the consumer must supply one of those names and cannot use 'ANY'
-
-          ## Mock Server
-          * This parameter is not validated.
-          * Any value will work.
-          * Recommend using **Any**.
+        description: "#### Description\nplanLocation is provided to allow MDHHs to\
+          \ authorize logical or\ngeographicalsubsets of an organization, for example-\
+          \ Grand Rapids or Diabetes Support Team.\n\nIf the DUA with MDHHS does not\
+          \ identify any authorized subsets, \nthe parameter will be set to 'ANY'.\
+          \ \nIf it has any authorized subsets, the consumer must supply \none of\
+          \ those names and cannot use 'ANY'\n\n#### Mock Server\n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using **Any**.\n"
         required: true
         type: string
         maxLength: 30
       - name: EHRSystem
         in: header
         description: |
-          ## Description
+          #### Description
           EHRSystem allows MDHHs to authorize one EHR to make requests while not
           authorizing another. The service must supply one of the names recorded in the
           web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
 
-          ## Mock Server
+          #### Mock Server
           * This parameter is not validated.
           * Any value will work.
           * Recommend using **Any**.
@@ -528,22 +490,22 @@ paths:
         maxLength: 30
       - name: validateACRS
         in: header
-        description: "## Description\nConsumer will be reviewing their own records\
+        description: "#### Description\nConsumer will be reviewing their own records\
           \ to attempt to establish a\ncurrentcare-relationship between the organization\
-          \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it\
-          \ will forward the request, and a CC360 service\nwill in turn attempt to\
-          \ find a relationship in its authorization tables, and\nact according to\
-          \ the result.\n----\nIf MiHIN can validate the relationship (validAcrs =\
-          \ **True**) the behaviour of\nCC360 service will vary between an initial\
-          \ ‘tuning’ phase and long-term\nproduction. \n----\nIn the tuning phase,\
-          \ a CC360 service will always consult its own\nauthorization tables and\
-          \ will act according to that value. \n----\nDaily, a reconciliation report\
-          \ will be generated to compare Consumer and CC360 results,\nand MDHHS staff\
-          \ will work with Consumer to understand and correct any variations.\nOnce\
-          \ the variations drop below a defined threshold (t.b.d), CC360 services\n\
-          will switch to always respecting any ACRS delivered True assertion.\n\n\
-          ## Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
-          * Recommend using **True**.\n"
+          \ and the beneficiary. \n\nIf it cannot (validAcrs = **False**), it will\
+          \ forward the request, \nand a CC360 service will in turn attempt to find\
+          \ a relationship in its\nauthorization tables, and act according to that\
+          \ result.\n\nIf MiHIN can validate the relationship (validAcrs = **True**)\
+          \ \nthe behaviour of CC360 service will vary between an initial \n‘tuning’\
+          \ phase and long-term production. \n\nIn the tuning phase, a CC360 service\
+          \ will always consult its own\nauthorization tables and will act according\
+          \ to that value. \n\nOn a daily basis, a reconciliation report will be generated\
+          \ to compare\nConsumer and CC360 results,  and MDHHS staff will work with\
+          \ Consumer to\nunderstand and correct any variations. Once the variations\
+          \ drop below a\ndefined threshold (t.b.d), CC360 services will switch to\
+          \ always \nrespecting any ACRS delivered True assertion.\n\n#### Mock Server\n\
+          * This parameter is not validated.\n* Any value will work.\n* Recommend\
+          \ using **True**.\n"
         required: true
         type: boolean
         enum:
@@ -551,19 +513,19 @@ paths:
         - "false"
       - name: userID
         in: header
-        description: "## Description\nThe name of the user from the Plan causing the\
-          \ API to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter\
-          \ is not validated.\n* Any value will work.\n* Recommend using one user\
-          \ ID for all your tests.\n"
+        description: "#### Description\nThe name of the user from the Plan causing\
+          \ the API to be \nrequested by  the consumer\n\n#### Mock Server\n* This\
+          \ parameter is not validated.\n* Any value will work.\n* Recommend using\
+          \ one user ID for all your tests.\n"
         required: true
         type: string
         maxLength: 30
       - name: beneID
         in: path
-        description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
-          \ Server\n\nThe only Bedneficiary ID's available on the Mock server are\
-          \ \n  * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not\
-          \ exist in either the QA ir Production servers.\n\n  \n"
+        description: "#### Description\n10 digit Bemeficiary Id, zero filled\n\n####\
+          \ Mock Server\n\nThe only Bedneficiary ID's available on the Mock server\
+          \ are \n\n  * **9999999006**\n  * **9999999957**\n  *\n  \nThese beneficiary\
+          \ ID's do not exist in either the QA ir Production servers.\n\n  \n"
         required: true
         type: string
         maxLength: 10
@@ -575,8 +537,6 @@ paths:
             application/json:
               $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryIPAdmissionsTile.json
           schema:
-            $ref: '#/definitions/SummaryIPAdmissionsDrillDownModel'
-          responseSchema:
             $ref: '#/definitions/SummaryIPAdmissionsDrillDownModel'
   /beneficiaries/{beneID}/summary/edvisits:
     get:
@@ -590,56 +550,49 @@ paths:
       parameters:
       - name: planID
         in: header
-        description: "## Description\nplanID and planType combine to uniquely identify\
+        description: "#### Description\nplanID and planType combine to uniquely identify\
           \ organizations within CC360.\nThey will be retrievable from CC360 via another\
-          \ service. \n----\n\nConsumer will use this service to populate their map\
-          \ mechanism so that incoming \nrequests can be translated into the correct\
-          \ CC360 organization details.\n\n----\n## Mock server    \n* This parameter\
-          \ is not validated.\n* Any value will work.\n* Recommend using **01**.\n"
+          \ service. \n\nConsumer will use this service to populate their map mechanism\
+          \ so that\nincoming requests can be translated into the correct CC360 oganization\
+          \ details\n\n\n#### Mock server    \n* This parameter is not validated.\n\
+          * Any value will work.\n* Recommend using **01**.\n"
         required: true
         type: string
         maxLength: 2
         minLength: 2
       - name: planType
         in: header
-        description: "## Description\nplanID and planType combine to uniquely identify\
+        description: "#### Description\nplanID and planType combine to uniquely identify\
           \ organizations within CC360.\nthey will be retrievable from CC360 via another\
-          \ service. \n----\nConsumer  will use this\nservice to populate their map\
-          \ mechanism so that incoming requests can be\ntranslated into the correct\
-          \ CC360 organization details.\n----\nPlan types are strings (ie PIHP, MHP,\
-          \ ICO, ....)\n\n## Mock Server\n* This parameter is not validated.\n* Any\
-          \ value will work.\n* Recommend using **CMH**.\n"
+          \ service. \n\nConsumer  will use this service to populate their map mechanism\
+          \ \nso that incoming requests can be translated into the correct CC360\n\
+          organization details.\n\nPlan types are strings (ie PIHP, MHP, ICO, ....)\n\
+          \n#### Mock Server\n* This parameter is not validated.\n* Any value will\
+          \ work.\n* Recommend using **CMH**.\n"
         required: true
         type: string
         maxLength: 10
       - name: planLocation
         in: header
-        description: |
-          ## Description
-          planLocation is provided to allow MDHHs to authorize logical or
-          geographicalsubsets of an organization, for example- Grand Rapids or
-          Diabetes Support Team.
-          ----
-          If the DUA with MDHHS does not identify any authorized
-          subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
-          the consumer must supply one of those names and cannot use 'ANY'
-
-          ## Mock Server
-          * This parameter is not validated.
-          * Any value will work.
-          * Recommend using **Any**.
+        description: "#### Description\nplanLocation is provided to allow MDHHs to\
+          \ authorize logical or\ngeographicalsubsets of an organization, for example-\
+          \ Grand Rapids or Diabetes Support Team.\n\nIf the DUA with MDHHS does not\
+          \ identify any authorized subsets, \nthe parameter will be set to 'ANY'.\
+          \ \nIf it has any authorized subsets, the consumer must supply \none of\
+          \ those names and cannot use 'ANY'\n\n#### Mock Server\n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using **Any**.\n"
         required: true
         type: string
         maxLength: 30
       - name: EHRSystem
         in: header
         description: |
-          ## Description
+          #### Description
           EHRSystem allows MDHHs to authorize one EHR to make requests while not
           authorizing another. The service must supply one of the names recorded in the
           web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
 
-          ## Mock Server
+          #### Mock Server
           * This parameter is not validated.
           * Any value will work.
           * Recommend using **Any**.
@@ -648,22 +601,22 @@ paths:
         maxLength: 30
       - name: validateACRS
         in: header
-        description: "## Description\nConsumer will be reviewing their own records\
+        description: "#### Description\nConsumer will be reviewing their own records\
           \ to attempt to establish a\ncurrentcare-relationship between the organization\
-          \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it\
-          \ will forward the request, and a CC360 service\nwill in turn attempt to\
-          \ find a relationship in its authorization tables, and\nact according to\
-          \ the result.\n----\nIf MiHIN can validate the relationship (validAcrs =\
-          \ **True**) the behaviour of\nCC360 service will vary between an initial\
-          \ ‘tuning’ phase and long-term\nproduction. \n----\nIn the tuning phase,\
-          \ a CC360 service will always consult its own\nauthorization tables and\
-          \ will act according to that value. \n----\nDaily, a reconciliation report\
-          \ will be generated to compare Consumer and CC360 results,\nand MDHHS staff\
-          \ will work with Consumer to understand and correct any variations.\nOnce\
-          \ the variations drop below a defined threshold (t.b.d), CC360 services\n\
-          will switch to always respecting any ACRS delivered True assertion.\n\n\
-          ## Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
-          * Recommend using **True**.\n"
+          \ and the beneficiary. \n\nIf it cannot (validAcrs = **False**), it will\
+          \ forward the request, \nand a CC360 service will in turn attempt to find\
+          \ a relationship in its\nauthorization tables, and act according to that\
+          \ result.\n\nIf MiHIN can validate the relationship (validAcrs = **True**)\
+          \ \nthe behaviour of CC360 service will vary between an initial \n‘tuning’\
+          \ phase and long-term production. \n\nIn the tuning phase, a CC360 service\
+          \ will always consult its own\nauthorization tables and will act according\
+          \ to that value. \n\nOn a daily basis, a reconciliation report will be generated\
+          \ to compare\nConsumer and CC360 results,  and MDHHS staff will work with\
+          \ Consumer to\nunderstand and correct any variations. Once the variations\
+          \ drop below a\ndefined threshold (t.b.d), CC360 services will switch to\
+          \ always \nrespecting any ACRS delivered True assertion.\n\n#### Mock Server\n\
+          * This parameter is not validated.\n* Any value will work.\n* Recommend\
+          \ using **True**.\n"
         required: true
         type: boolean
         enum:
@@ -671,19 +624,19 @@ paths:
         - "false"
       - name: userID
         in: header
-        description: "## Description\nThe name of the user from the Plan causing the\
-          \ API to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter\
-          \ is not validated.\n* Any value will work.\n* Recommend using one user\
-          \ ID for all your tests.\n"
+        description: "#### Description\nThe name of the user from the Plan causing\
+          \ the API to be \nrequested by  the consumer\n\n#### Mock Server\n* This\
+          \ parameter is not validated.\n* Any value will work.\n* Recommend using\
+          \ one user ID for all your tests.\n"
         required: true
         type: string
         maxLength: 30
       - name: beneID
         in: path
-        description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
-          \ Server\n\nThe only Bedneficiary ID's available on the Mock server are\
-          \ \n  * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not\
-          \ exist in either the QA ir Production servers.\n\n  \n"
+        description: "#### Description\n10 digit Bemeficiary Id, zero filled\n\n####\
+          \ Mock Server\n\nThe only Bedneficiary ID's available on the Mock server\
+          \ are \n\n  * **9999999006**\n  * **9999999957**\n  *\n  \nThese beneficiary\
+          \ ID's do not exist in either the QA ir Production servers.\n\n  \n"
         required: true
         type: string
         maxLength: 10
@@ -695,8 +648,6 @@ paths:
             application/json:
               $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryEDVisitsTileShort.json
           schema:
-            $ref: '#/definitions/SummaryEDVisitsDrillDownModel'
-          responseSchema:
             $ref: '#/definitions/SummaryEDVisitsDrillDownModel'
   /beneficiaries/{beneID}/summary/recentproviders:
     get:
@@ -710,56 +661,49 @@ paths:
       parameters:
       - name: planID
         in: header
-        description: "## Description\nplanID and planType combine to uniquely identify\
+        description: "#### Description\nplanID and planType combine to uniquely identify\
           \ organizations within CC360.\nThey will be retrievable from CC360 via another\
-          \ service. \n----\n\nConsumer will use this service to populate their map\
-          \ mechanism so that incoming \nrequests can be translated into the correct\
-          \ CC360 organization details.\n\n----\n## Mock server    \n* This parameter\
-          \ is not validated.\n* Any value will work.\n* Recommend using **01**.\n"
+          \ service. \n\nConsumer will use this service to populate their map mechanism\
+          \ so that\nincoming requests can be translated into the correct CC360 oganization\
+          \ details\n\n\n#### Mock server    \n* This parameter is not validated.\n\
+          * Any value will work.\n* Recommend using **01**.\n"
         required: true
         type: string
         maxLength: 2
         minLength: 2
       - name: planType
         in: header
-        description: "## Description\nplanID and planType combine to uniquely identify\
+        description: "#### Description\nplanID and planType combine to uniquely identify\
           \ organizations within CC360.\nthey will be retrievable from CC360 via another\
-          \ service. \n----\nConsumer  will use this\nservice to populate their map\
-          \ mechanism so that incoming requests can be\ntranslated into the correct\
-          \ CC360 organization details.\n----\nPlan types are strings (ie PIHP, MHP,\
-          \ ICO, ....)\n\n## Mock Server\n* This parameter is not validated.\n* Any\
-          \ value will work.\n* Recommend using **CMH**.\n"
+          \ service. \n\nConsumer  will use this service to populate their map mechanism\
+          \ \nso that incoming requests can be translated into the correct CC360\n\
+          organization details.\n\nPlan types are strings (ie PIHP, MHP, ICO, ....)\n\
+          \n#### Mock Server\n* This parameter is not validated.\n* Any value will\
+          \ work.\n* Recommend using **CMH**.\n"
         required: true
         type: string
         maxLength: 10
       - name: planLocation
         in: header
-        description: |
-          ## Description
-          planLocation is provided to allow MDHHs to authorize logical or
-          geographicalsubsets of an organization, for example- Grand Rapids or
-          Diabetes Support Team.
-          ----
-          If the DUA with MDHHS does not identify any authorized
-          subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
-          the consumer must supply one of those names and cannot use 'ANY'
-
-          ## Mock Server
-          * This parameter is not validated.
-          * Any value will work.
-          * Recommend using **Any**.
+        description: "#### Description\nplanLocation is provided to allow MDHHs to\
+          \ authorize logical or\ngeographicalsubsets of an organization, for example-\
+          \ Grand Rapids or Diabetes Support Team.\n\nIf the DUA with MDHHS does not\
+          \ identify any authorized subsets, \nthe parameter will be set to 'ANY'.\
+          \ \nIf it has any authorized subsets, the consumer must supply \none of\
+          \ those names and cannot use 'ANY'\n\n#### Mock Server\n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using **Any**.\n"
         required: true
         type: string
         maxLength: 30
       - name: EHRSystem
         in: header
         description: |
-          ## Description
+          #### Description
           EHRSystem allows MDHHs to authorize one EHR to make requests while not
           authorizing another. The service must supply one of the names recorded in the
           web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
 
-          ## Mock Server
+          #### Mock Server
           * This parameter is not validated.
           * Any value will work.
           * Recommend using **Any**.
@@ -768,22 +712,22 @@ paths:
         maxLength: 30
       - name: validateACRS
         in: header
-        description: "## Description\nConsumer will be reviewing their own records\
+        description: "#### Description\nConsumer will be reviewing their own records\
           \ to attempt to establish a\ncurrentcare-relationship between the organization\
-          \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it\
-          \ will forward the request, and a CC360 service\nwill in turn attempt to\
-          \ find a relationship in its authorization tables, and\nact according to\
-          \ the result.\n----\nIf MiHIN can validate the relationship (validAcrs =\
-          \ **True**) the behaviour of\nCC360 service will vary between an initial\
-          \ ‘tuning’ phase and long-term\nproduction. \n----\nIn the tuning phase,\
-          \ a CC360 service will always consult its own\nauthorization tables and\
-          \ will act according to that value. \n----\nDaily, a reconciliation report\
-          \ will be generated to compare Consumer and CC360 results,\nand MDHHS staff\
-          \ will work with Consumer to understand and correct any variations.\nOnce\
-          \ the variations drop below a defined threshold (t.b.d), CC360 services\n\
-          will switch to always respecting any ACRS delivered True assertion.\n\n\
-          ## Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
-          * Recommend using **True**.\n"
+          \ and the beneficiary. \n\nIf it cannot (validAcrs = **False**), it will\
+          \ forward the request, \nand a CC360 service will in turn attempt to find\
+          \ a relationship in its\nauthorization tables, and act according to that\
+          \ result.\n\nIf MiHIN can validate the relationship (validAcrs = **True**)\
+          \ \nthe behaviour of CC360 service will vary between an initial \n‘tuning’\
+          \ phase and long-term production. \n\nIn the tuning phase, a CC360 service\
+          \ will always consult its own\nauthorization tables and will act according\
+          \ to that value. \n\nOn a daily basis, a reconciliation report will be generated\
+          \ to compare\nConsumer and CC360 results,  and MDHHS staff will work with\
+          \ Consumer to\nunderstand and correct any variations. Once the variations\
+          \ drop below a\ndefined threshold (t.b.d), CC360 services will switch to\
+          \ always \nrespecting any ACRS delivered True assertion.\n\n#### Mock Server\n\
+          * This parameter is not validated.\n* Any value will work.\n* Recommend\
+          \ using **True**.\n"
         required: true
         type: boolean
         enum:
@@ -791,19 +735,19 @@ paths:
         - "false"
       - name: userID
         in: header
-        description: "## Description\nThe name of the user from the Plan causing the\
-          \ API to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter\
-          \ is not validated.\n* Any value will work.\n* Recommend using one user\
-          \ ID for all your tests.\n"
+        description: "#### Description\nThe name of the user from the Plan causing\
+          \ the API to be \nrequested by  the consumer\n\n#### Mock Server\n* This\
+          \ parameter is not validated.\n* Any value will work.\n* Recommend using\
+          \ one user ID for all your tests.\n"
         required: true
         type: string
         maxLength: 30
       - name: beneID
         in: path
-        description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
-          \ Server\n\nThe only Bedneficiary ID's available on the Mock server are\
-          \ \n  * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not\
-          \ exist in either the QA ir Production servers.\n\n  \n"
+        description: "#### Description\n10 digit Bemeficiary Id, zero filled\n\n####\
+          \ Mock Server\n\nThe only Bedneficiary ID's available on the Mock server\
+          \ are \n\n  * **9999999006**\n  * **9999999957**\n  *\n  \nThese beneficiary\
+          \ ID's do not exist in either the QA ir Production servers.\n\n  \n"
         required: true
         type: string
         maxLength: 10
@@ -815,8 +759,6 @@ paths:
             application/json:
               $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryRecentProvidersTileShort.json
           schema:
-            $ref: '#/definitions/SummaryRecentProvidersTileModel'
-          responseSchema:
             $ref: '#/definitions/SummaryRecentProvidersTileModel'
   /beneficiaries/{beneID}/summary/procedurecodes:
     get:
@@ -830,56 +772,49 @@ paths:
       parameters:
       - name: planID
         in: header
-        description: "## Description\nplanID and planType combine to uniquely identify\
+        description: "#### Description\nplanID and planType combine to uniquely identify\
           \ organizations within CC360.\nThey will be retrievable from CC360 via another\
-          \ service. \n----\n\nConsumer will use this service to populate their map\
-          \ mechanism so that incoming \nrequests can be translated into the correct\
-          \ CC360 organization details.\n\n----\n## Mock server    \n* This parameter\
-          \ is not validated.\n* Any value will work.\n* Recommend using **01**.\n"
+          \ service. \n\nConsumer will use this service to populate their map mechanism\
+          \ so that\nincoming requests can be translated into the correct CC360 oganization\
+          \ details\n\n\n#### Mock server    \n* This parameter is not validated.\n\
+          * Any value will work.\n* Recommend using **01**.\n"
         required: true
         type: string
         maxLength: 2
         minLength: 2
       - name: planType
         in: header
-        description: "## Description\nplanID and planType combine to uniquely identify\
+        description: "#### Description\nplanID and planType combine to uniquely identify\
           \ organizations within CC360.\nthey will be retrievable from CC360 via another\
-          \ service. \n----\nConsumer  will use this\nservice to populate their map\
-          \ mechanism so that incoming requests can be\ntranslated into the correct\
-          \ CC360 organization details.\n----\nPlan types are strings (ie PIHP, MHP,\
-          \ ICO, ....)\n\n## Mock Server\n* This parameter is not validated.\n* Any\
-          \ value will work.\n* Recommend using **CMH**.\n"
+          \ service. \n\nConsumer  will use this service to populate their map mechanism\
+          \ \nso that incoming requests can be translated into the correct CC360\n\
+          organization details.\n\nPlan types are strings (ie PIHP, MHP, ICO, ....)\n\
+          \n#### Mock Server\n* This parameter is not validated.\n* Any value will\
+          \ work.\n* Recommend using **CMH**.\n"
         required: true
         type: string
         maxLength: 10
       - name: planLocation
         in: header
-        description: |
-          ## Description
-          planLocation is provided to allow MDHHs to authorize logical or
-          geographicalsubsets of an organization, for example- Grand Rapids or
-          Diabetes Support Team.
-          ----
-          If the DUA with MDHHS does not identify any authorized
-          subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
-          the consumer must supply one of those names and cannot use 'ANY'
-
-          ## Mock Server
-          * This parameter is not validated.
-          * Any value will work.
-          * Recommend using **Any**.
+        description: "#### Description\nplanLocation is provided to allow MDHHs to\
+          \ authorize logical or\ngeographicalsubsets of an organization, for example-\
+          \ Grand Rapids or Diabetes Support Team.\n\nIf the DUA with MDHHS does not\
+          \ identify any authorized subsets, \nthe parameter will be set to 'ANY'.\
+          \ \nIf it has any authorized subsets, the consumer must supply \none of\
+          \ those names and cannot use 'ANY'\n\n#### Mock Server\n* This parameter\
+          \ is not validated.\n* Any value will work.\n* Recommend using **Any**.\n"
         required: true
         type: string
         maxLength: 30
       - name: EHRSystem
         in: header
         description: |
-          ## Description
+          #### Description
           EHRSystem allows MDHHs to authorize one EHR to make requests while not
           authorizing another. The service must supply one of the names recorded in the
           web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
 
-          ## Mock Server
+          #### Mock Server
           * This parameter is not validated.
           * Any value will work.
           * Recommend using **Any**.
@@ -888,22 +823,22 @@ paths:
         maxLength: 30
       - name: validateACRS
         in: header
-        description: "## Description\nConsumer will be reviewing their own records\
+        description: "#### Description\nConsumer will be reviewing their own records\
           \ to attempt to establish a\ncurrentcare-relationship between the organization\
-          \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it\
-          \ will forward the request, and a CC360 service\nwill in turn attempt to\
-          \ find a relationship in its authorization tables, and\nact according to\
-          \ the result.\n----\nIf MiHIN can validate the relationship (validAcrs =\
-          \ **True**) the behaviour of\nCC360 service will vary between an initial\
-          \ ‘tuning’ phase and long-term\nproduction. \n----\nIn the tuning phase,\
-          \ a CC360 service will always consult its own\nauthorization tables and\
-          \ will act according to that value. \n----\nDaily, a reconciliation report\
-          \ will be generated to compare Consumer and CC360 results,\nand MDHHS staff\
-          \ will work with Consumer to understand and correct any variations.\nOnce\
-          \ the variations drop below a defined threshold (t.b.d), CC360 services\n\
-          will switch to always respecting any ACRS delivered True assertion.\n\n\
-          ## Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
-          * Recommend using **True**.\n"
+          \ and the beneficiary. \n\nIf it cannot (validAcrs = **False**), it will\
+          \ forward the request, \nand a CC360 service will in turn attempt to find\
+          \ a relationship in its\nauthorization tables, and act according to that\
+          \ result.\n\nIf MiHIN can validate the relationship (validAcrs = **True**)\
+          \ \nthe behaviour of CC360 service will vary between an initial \n‘tuning’\
+          \ phase and long-term production. \n\nIn the tuning phase, a CC360 service\
+          \ will always consult its own\nauthorization tables and will act according\
+          \ to that value. \n\nOn a daily basis, a reconciliation report will be generated\
+          \ to compare\nConsumer and CC360 results,  and MDHHS staff will work with\
+          \ Consumer to\nunderstand and correct any variations. Once the variations\
+          \ drop below a\ndefined threshold (t.b.d), CC360 services will switch to\
+          \ always \nrespecting any ACRS delivered True assertion.\n\n#### Mock Server\n\
+          * This parameter is not validated.\n* Any value will work.\n* Recommend\
+          \ using **True**.\n"
         required: true
         type: boolean
         enum:
@@ -911,19 +846,19 @@ paths:
         - "false"
       - name: userID
         in: header
-        description: "## Description\nThe name of the user from the Plan causing the\
-          \ API to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter\
-          \ is not validated.\n* Any value will work.\n* Recommend using one user\
-          \ ID for all your tests.\n"
+        description: "#### Description\nThe name of the user from the Plan causing\
+          \ the API to be \nrequested by  the consumer\n\n#### Mock Server\n* This\
+          \ parameter is not validated.\n* Any value will work.\n* Recommend using\
+          \ one user ID for all your tests.\n"
         required: true
         type: string
         maxLength: 30
       - name: beneID
         in: path
-        description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
-          \ Server\n\nThe only Bedneficiary ID's available on the Mock server are\
-          \ \n  * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not\
-          \ exist in either the QA ir Production servers.\n\n  \n"
+        description: "#### Description\n10 digit Bemeficiary Id, zero filled\n\n####\
+          \ Mock Server\n\nThe only Bedneficiary ID's available on the Mock server\
+          \ are \n\n  * **9999999006**\n  * **9999999957**\n  *\n  \nThese beneficiary\
+          \ ID's do not exist in either the QA ir Production servers.\n\n  \n"
         required: true
         type: string
         maxLength: 10
@@ -932,27 +867,20 @@ paths:
         200:
           description: Success
           examples:
-            application/json:
-              $ref: https://pwc-lms.com/ATvh6ASxjcZIea2K0Uo84XRzy/SummaryProcedureCodesTileShort.json
+            application/json: null
           schema:
-            $ref: '#/definitions/SummaryProcedureCodesTileModel'
-          responseSchema:
             $ref: '#/definitions/SummaryProcedureCodesTileModel'
 securityDefinitions:
   basicAuth:
-    description: |
-      ## Security Contract
-      planID, planType, planLocation, and planSystem are the header elements used
-      during connection validation. The validation comprises two steps – validation
-      that the organization has an authorized care relationship with the passed
-      beneficiary, and validation that the qualified-organization is currently
-      authorized to use the service at all.
-
-      ‘planID + planType’ uniquely identifies an organization and can used to
-      provide an index into the CC360 universe table to validate organization acces.
-
-      ‘planID + planType + planLocation + planSystem’ uniquely identifies an entry
-      in the system-access authorization table.
+    description: "#### Security Contract\nplanID, planType, planLocation, and planSystem\
+      \ are the header elements used\nduring connection validation. \n\nThe validation\
+      \ comprises two steps – validation\nthat the organization has an authorized\
+      \ care relationship with the passed\nbeneficiary, and validation that the qualified-organization\
+      \ is currently\nauthorized to use the service at all.\n\n`planID` + `planType`\
+      \ uniquely identifies an organization and can used to\nprovide an index into\
+      \ the CC360 universe table to validate organization acces.\n\n‘planID + planType\
+      \ + planLocation + planSystem’ uniquely identifies an entry\nin the system-access\
+      \ authorization table.\n"
     type: basic
 definitions:
   Status400:
@@ -1074,6 +1002,84 @@ definitions:
     description: "**NOTE** This model describes a single object.  \nThere are 11 areas\
       \ (Tiles) of summaries that make up this model.\nAll 11 tiles are returned in\
       \ a single object.\n"
+    example:
+      EDVisits:
+      - Facility: '1134144801 -  HENRY FORD HOSPITAL '
+        VisitDate: 12/27/2016
+        TILE_IND: 'L    '
+      - Facility: '1134144801 -  HENRY FORD HOSPITAL '
+        VisitDate: 12/27/2016
+        TILE_IND: 'L    '
+      ProcedureCodes:
+      - Current Count: 3
+        Procedure Code: 99213 -  Office/outpatient visit est
+      - Current Count: 3
+        Procedure Code: 99213 -  Office/outpatient visit est
+      Antipsychotics:
+      - NumberOfFills: 2
+        GenericDrugName: BREXPIPRAZOLE
+        MostRecentFill: 2017-06-30
+      - NumberOfFills: 2
+        GenericDrugName: BREXPIPRAZOLE
+        MostRecentFill: 2017-06-30
+      RecentProviders:
+      - ProviderID: "1952791105"
+        ProviderName: BEST URGENT CARE PC
+        MostRecentVisit: 2017-05-08
+        TotalVisits: 3
+      - ProviderID: "1952791105"
+        ProviderName: BEST URGENT CARE PC
+        MostRecentVisit: 2017-05-08
+        TotalVisits: 3
+      IPAdmissions:
+      - TILE_IND: 'L    '
+        FacilityName: '1952307852 -  MUNSON MEDICAL CENTER '
+        AdmitDate: 2016/02/16
+      - TILE_IND: 'L    '
+        FacilityName: '1952307852 -  MUNSON MEDICAL CENTER '
+        AdmitDate: 2016/02/16
+      ERDental:
+      - VisitDate: 02/22/2016
+        TILE_IND: 'L    '
+        Provider: 'Hoover Family Dental '
+      - VisitDate: 02/22/2016
+        TILE_IND: 'L    '
+        Provider: 'Hoover Family Dental '
+      Pharmacy:
+      - Number of Fills: 14
+        GenericDrugName: ALPRAZOLAM
+        Most Recent Fill: 3/14/2017 12:00:00 AM
+      - Number of Fills: 14
+        GenericDrugName: ALPRAZOLAM
+        Most Recent Fill: 3/14/2017 12:00:00 AM
+      ChronicConditions:
+      - Condition: DIABETES
+        CurrentCount: 14
+        TILE_IND: 'H    '
+      - Condition: DIABETES
+        CurrentCount: 14
+        TILE_IND: 'H    '
+      Psychotropics:
+      - NumberOfFills: 3
+        GenericDrugName: DIVALPROEX SODIUM
+        MostRecentFill: 2016-09-19
+      - NumberOfFills: 3
+        GenericDrugName: DIVALPROEX SODIUM
+        MostRecentFill: 2016-09-19
+      BHIPAdmissions:
+      - AdminDate: 2017-05-05
+        TILE_IND: 'H    '
+        FacilityName: '1144381245 -  HARBOR OAKS HOSPITAL '
+      - AdminDate: 2017-05-05
+        TILE_IND: 'H    '
+        FacilityName: '1144381245 -  HARBOR OAKS HOSPITAL '
+      Dental:
+      - VisitDate: 02/22/2016
+        TILE_IND: 'L    '
+        Provider: 'Hoover Family Dental '
+      - VisitDate: 02/22/2016
+        TILE_IND: 'L    '
+        Provider: 'Hoover Family Dental '
   SummaryPharmacyDrillDownModel:
     type: array
     description: |
@@ -1216,6 +1222,10 @@ definitions:
           * L - Low
           * M - Medium
           * H - High
+    example:
+      Condition: DIABETES
+      CurrentCount: 14
+      TILE_IND: 'H    '
   ClientSummaryTilesModel_Pharmacy:
     properties:
       GenericDrugName:
@@ -1235,6 +1245,10 @@ definitions:
           The date portion is separated from the time portion by a single space.
 
           Date Format - zm/zd/yyyy months and days dont have leading zeros.
+    example:
+      Number of Fills: 14
+      GenericDrugName: ALPRAZOLAM
+      Most Recent Fill: 3/14/2017 12:00:00 AM
   ClientSummaryTilesModel_EDVisits:
     properties:
       VisitDate:
@@ -1255,6 +1269,10 @@ definitions:
           * L - Low
           * M - Medium
           * H - High
+    example:
+      Facility: '1134144801 -  HENRY FORD HOSPITAL '
+      VisitDate: 12/27/2016
+      TILE_IND: 'L    '
   ClientSummaryTilesModel_IPAdmissions:
     properties:
       AdmitDate:
@@ -1274,6 +1292,10 @@ definitions:
           * L - Low
           * M - Medium
           * H - High
+    example:
+      TILE_IND: 'L    '
+      FacilityName: '1952307852 -  MUNSON MEDICAL CENTER '
+      AdmitDate: 2016/02/16
   ClientSummaryTilesModel_ProcedureCodes:
     properties:
       Procedure Code:
@@ -1283,6 +1305,9 @@ definitions:
         type: integer
         format: int32
         example: 3
+    example:
+      Current Count: 3
+      Procedure Code: 99213 -  Office/outpatient visit est
   ClientSummaryTilesModel_Psychotropics:
     properties:
       GenericDrugName:
@@ -1299,6 +1324,10 @@ definitions:
         example: 2016-09-19
         description: |
           hhhhh
+    example:
+      NumberOfFills: 3
+      GenericDrugName: DIVALPROEX SODIUM
+      MostRecentFill: 2016-09-19
   ClientSummaryTilesModel_Antipsychotics:
     properties:
       GenericDrugName:
@@ -1311,6 +1340,10 @@ definitions:
       MostRecentFill:
         type: string
         example: 2017-06-30
+    example:
+      NumberOfFills: 2
+      GenericDrugName: BREXPIPRAZOLE
+      MostRecentFill: 2017-06-30
   ClientSummaryTilesModel_Dental:
     properties:
       VisitDate:
@@ -1328,6 +1361,10 @@ definitions:
           * L - Low
           * M - Medium
           * H - High
+    example:
+      VisitDate: 02/22/2016
+      TILE_IND: 'L    '
+      Provider: 'Hoover Family Dental '
   ClientSummaryTilesModel_RecentProviders:
     properties:
       MostRecentVisit:
@@ -1343,6 +1380,11 @@ definitions:
         type: integer
         format: int32
         example: 3
+    example:
+      ProviderID: "1952791105"
+      ProviderName: BEST URGENT CARE PC
+      MostRecentVisit: 2017-05-08
+      TotalVisits: 3
   ClientSummaryTilesModel_BHIPAdmissions:
     properties:
       AdminDate:
@@ -1360,6 +1402,10 @@ definitions:
           * L - Low
           * M - Medium
           * H - High
+    example:
+      AdminDate: 2017-05-05
+      TILE_IND: 'H    '
+      FacilityName: '1144381245 -  HARBOR OAKS HOSPITAL '
   SummaryPharmacyDrillDownModel_inner:
     properties:
       BeneficiaryID:
@@ -1567,12 +1613,12 @@ parameters:
   planIDParam:
     name: planID
     in: header
-    description: "## Description\nplanID and planType combine to uniquely identify\
+    description: "#### Description\nplanID and planType combine to uniquely identify\
       \ organizations within CC360.\nThey will be retrievable from CC360 via another\
-      \ service. \n----\n\nConsumer will use this service to populate their map mechanism\
-      \ so that incoming \nrequests can be translated into the correct CC360 organization\
-      \ details.\n\n----\n## Mock server    \n* This parameter is not validated.\n\
-      * Any value will work.\n* Recommend using **01**.\n"
+      \ service. \n\nConsumer will use this service to populate their map mechanism\
+      \ so that\nincoming requests can be translated into the correct CC360 oganization\
+      \ details\n\n\n#### Mock server    \n* This parameter is not validated.\n* Any\
+      \ value will work.\n* Recommend using **01**.\n"
     required: true
     type: string
     maxLength: 2
@@ -1580,11 +1626,11 @@ parameters:
   planTypeParam:
     name: planType
     in: header
-    description: "## Description\nplanID and planType combine to uniquely identify\
+    description: "#### Description\nplanID and planType combine to uniquely identify\
       \ organizations within CC360.\nthey will be retrievable from CC360 via another\
-      \ service. \n----\nConsumer  will use this\nservice to populate their map mechanism\
-      \ so that incoming requests can be\ntranslated into the correct CC360 organization\
-      \ details.\n----\nPlan types are strings (ie PIHP, MHP, ICO, ....)\n\n## Mock\
+      \ service. \n\nConsumer  will use this service to populate their map mechanism\
+      \ \nso that incoming requests can be translated into the correct CC360\norganization\
+      \ details.\n\nPlan types are strings (ie PIHP, MHP, ICO, ....)\n\n#### Mock\
       \ Server\n* This parameter is not validated.\n* Any value will work.\n* Recommend\
       \ using **CMH**.\n"
     required: true
@@ -1593,20 +1639,13 @@ parameters:
   planLocationParam:
     name: planLocation
     in: header
-    description: |
-      ## Description
-      planLocation is provided to allow MDHHs to authorize logical or
-      geographicalsubsets of an organization, for example- Grand Rapids or
-      Diabetes Support Team.
-      ----
-      If the DUA with MDHHS does not identify any authorized
-      subsets, the parameter will be set to 'ANY'. If it has any authorized subsets,
-      the consumer must supply one of those names and cannot use 'ANY'
-
-      ## Mock Server
-      * This parameter is not validated.
-      * Any value will work.
-      * Recommend using **Any**.
+    description: "#### Description\nplanLocation is provided to allow MDHHs to authorize\
+      \ logical or\ngeographicalsubsets of an organization, for example- Grand Rapids\
+      \ or Diabetes Support Team.\n\nIf the DUA with MDHHS does not identify any authorized\
+      \ subsets, \nthe parameter will be set to 'ANY'. \nIf it has any authorized\
+      \ subsets, the consumer must supply \none of those names and cannot use 'ANY'\n\
+      \n#### Mock Server\n* This parameter is not validated.\n* Any value will work.\n\
+      * Recommend using **Any**.\n"
     required: true
     type: string
     maxLength: 30
@@ -1614,12 +1653,12 @@ parameters:
     name: EHRSystem
     in: header
     description: |
-      ## Description
+      #### Description
       EHRSystem allows MDHHs to authorize one EHR to make requests while not
       authorizing another. The service must supply one of the names recorded in the
       web-service DUA as authorized at the requesting planLocation. (ie- 'PCE')
 
-      ## Mock Server
+      #### Mock Server
       * This parameter is not validated.
       * Any value will work.
       * Recommend using **Any**.
@@ -1629,19 +1668,19 @@ parameters:
   validatedACRSParm:
     name: validateACRS
     in: header
-    description: "## Description\nConsumer will be reviewing their own records to\
+    description: "#### Description\nConsumer will be reviewing their own records to\
       \ attempt to establish a\ncurrentcare-relationship between the organization\
-      \ and the beneficiary. \n----\nIf it cannot (validAcrs = **False**), it will\
-      \ forward the request, and a CC360 service\nwill in turn attempt to find a relationship\
-      \ in its authorization tables, and\nact according to the result.\n----\nIf MiHIN\
-      \ can validate the relationship (validAcrs = **True**) the behaviour of\nCC360\
-      \ service will vary between an initial ‘tuning’ phase and long-term\nproduction.\
-      \ \n----\nIn the tuning phase, a CC360 service will always consult its own\n\
-      authorization tables and will act according to that value. \n----\nDaily, a\
-      \ reconciliation report will be generated to compare Consumer and CC360 results,\n\
-      and MDHHS staff will work with Consumer to understand and correct any variations.\n\
-      Once the variations drop below a defined threshold (t.b.d), CC360 services\n\
-      will switch to always respecting any ACRS delivered True assertion.\n\n## Mock\
+      \ and the beneficiary. \n\nIf it cannot (validAcrs = **False**), it will forward\
+      \ the request, \nand a CC360 service will in turn attempt to find a relationship\
+      \ in its\nauthorization tables, and act according to that result.\n\nIf MiHIN\
+      \ can validate the relationship (validAcrs = **True**) \nthe behaviour of CC360\
+      \ service will vary between an initial \n‘tuning’ phase and long-term production.\
+      \ \n\nIn the tuning phase, a CC360 service will always consult its own\nauthorization\
+      \ tables and will act according to that value. \n\nOn a daily basis, a reconciliation\
+      \ report will be generated to compare\nConsumer and CC360 results,  and MDHHS\
+      \ staff will work with Consumer to\nunderstand and correct any variations. Once\
+      \ the variations drop below a\ndefined threshold (t.b.d), CC360 services will\
+      \ switch to always \nrespecting any ACRS delivered True assertion.\n\n#### Mock\
       \ Server\n* This parameter is not validated.\n* Any value will work.\n* Recommend\
       \ using **True**.\n"
     required: true
@@ -1652,9 +1691,9 @@ parameters:
   userIDParm:
     name: userID
     in: header
-    description: "## Description\nThe name of the user from the Plan causing the API\
-      \ to be \nrequested by  the consumer\n\n## Mock Server\n* This parameter is\
-      \ not validated.\n* Any value will work.\n* Recommend using one user ID for\
+    description: "#### Description\nThe name of the user from the Plan causing the\
+      \ API to be \nrequested by  the consumer\n\n#### Mock Server\n* This parameter\
+      \ is not validated.\n* Any value will work.\n* Recommend using one user ID for\
       \ all your tests.\n"
     required: true
     type: string
@@ -1662,10 +1701,10 @@ parameters:
   beneficiaryIDParam:
     name: beneID
     in: path
-    description: "## Description\n10 digit Bemeficiary Id, zero filled\n\n## Mock\
-      \ Server\n\nThe only Bedneficiary ID's available on the Mock server are \n \
-      \ * 9999999006\n  * 9999999957\n  *\n  \nThese beneficiary ID's do not exist\
-      \ in either the QA ir Production servers.\n\n  \n"
+    description: "#### Description\n10 digit Bemeficiary Id, zero filled\n\n#### Mock\
+      \ Server\n\nThe only Bedneficiary ID's available on the Mock server are \n\n\
+      \  * **9999999006**\n  * **9999999957**\n  *\n  \nThese beneficiary ID's do\
+      \ not exist in either the QA ir Production servers.\n\n  \n"
     required: true
     type: string
     maxLength: 10
